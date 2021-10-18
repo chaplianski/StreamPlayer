@@ -1,18 +1,20 @@
 package com.example.streamplayer
 
-import android.media.AudioAttributes
-import android.media.MediaPlayer
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.streamplayer.databinding.FragmentSongItemBinding
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.SimpleExoPlayer
 
 class SongItem : Fragment() {
     lateinit var binding: FragmentSongItemBinding
-    lateinit var mediaPlayer: MediaPlayer
+    lateinit var player: ExoPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,18 +34,14 @@ class SongItem : Fragment() {
 
         binding.btPlayPause.setOnClickListener {
             val uri = "https://freepd.com/music/Ice and Snow.mp3"
-             mediaPlayer = MediaPlayer().apply {
-                setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .build()
-                )
-                setDataSource(uri)
-                prepare()
-                start()
-            }
-            Toast.makeText(context,"Play",Toast.LENGTH_SHORT).show()
+            player = SimpleExoPlayer.Builder(requireContext()).build()
+            val mediaItem: MediaItem = MediaItem.fromUri(uri)
+            player.setMediaItem(mediaItem)
+            player.prepare()
+            player.play()
+
+
+     //       Toast.makeText(context,"Play",Toast.LENGTH_SHORT).show()
         }
         binding.btBack.setOnClickListener {
             Toast.makeText(context,"Back",Toast.LENGTH_SHORT).show()
@@ -55,10 +53,14 @@ class SongItem : Fragment() {
             Toast.makeText(context,"To hight level",Toast.LENGTH_SHORT).show()
         }
         binding.btStop.setOnClickListener {
-            Toast.makeText(context,"Stop",Toast.LENGTH_SHORT).show()
-            mediaPlayer.reset()
+        //    Toast.makeText(context,"Stop",Toast.LENGTH_SHORT).show()
+           player.release()
         }
-
+        binding.btToHightLevel.setOnClickListener {
+        //    Toast.makeText(context,"Stop",Toast.LENGTH_SHORT).show()
+            findNavController().navigate(com.example.streamplayer.R.id.action_songItem_to_songList)
+            player.release()
+        }
     }
 
     override fun onDestroy() {

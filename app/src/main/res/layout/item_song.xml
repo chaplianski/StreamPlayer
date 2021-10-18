@@ -20,25 +20,29 @@
                 android:id="@+id/item_song_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="28dp"
+                android:layout_marginEnd="228dp"
                 android:text="Song Title"
                 android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@+id/item_song_artist"
-                app:layout_constraintStart_toEndOf="@+id/item_song_artist"
-                app:layout_constraintTop_toTopOf="@+id/item_song_artist"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/item_song_artist"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0" />
 
             <TextView
                 android:id="@+id/item_song_artist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="28dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="280dp"
                 android:text="Artist"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/iv_song_item_artist_image"
-                app:layout_constraintTop_toTopOf="@+id/iv_song_item_artist_image"
-                app:layout_constraintVertical_bias="0.545" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.181" />
 
             <ImageView
                 android:id="@+id/iv_song_item_artist_image"
@@ -49,30 +53,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 tools:layout_editor_absoluteY="0dp"
                 tools:srcCompat="@tools:sample/avatars" />
-
-            <TextView
-                android:id="@+id/item_song_duration"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:text="Duration"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@+id/item_song_title"
-                app:layout_constraintStart_toEndOf="@+id/item_song_title"
-                app:layout_constraintTop_toTopOf="@+id/item_song_title"
-                app:layout_constraintVertical_bias="1.0" />
-
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="-"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@+id/item_song_artist"
-                app:layout_constraintEnd_toStartOf="@+id/item_song_title"
-                app:layout_constraintStart_toEndOf="@+id/item_song_artist"
-                app:layout_constraintTop_toTopOf="@+id/item_song_artist"
-                app:layout_constraintVertical_bias="0.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

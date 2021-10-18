@@ -37,6 +37,9 @@ data class Tracks(
 	@Json(name="artistId")
 	val artistId: String? = null,
 
+	@Json(name="artistImageUri")
+	var artistImageUri: String? = null,
+
 
 ):Parcelable
 

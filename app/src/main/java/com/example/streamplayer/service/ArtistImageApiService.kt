@@ -12,14 +12,14 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-interface ArtistApiService {
+interface ArtistImageApiService {
     @GET("/v2.2/artists/{artistId}/images?apikey=NjEyMDFhMTktNjViNS00MjMyLWFlNzItMWI3YTUwNGMwNWJl")
     fun fetchArtist(@Path("artistId") artistId: String ): Call<ArtistImages<List<ImagesItem>>>
 
     companion object {
         val BASE_URL = "https://api.napster.com"
 
-        fun getApiService(): ArtistApiService {
+        fun getApiService(): ArtistImageApiService {
 
             val url = BASE_URL
             val moshi = Moshi.Builder()
@@ -40,7 +40,7 @@ interface ArtistApiService {
                 .client(okkHttpclient)
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .build()
-            return retrofit.create(ArtistApiService::class.java)
+            return retrofit.create(ArtistImageApiService::class.java)
         }
     }
 }

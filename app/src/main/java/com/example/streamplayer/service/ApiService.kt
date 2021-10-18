@@ -50,35 +50,4 @@ interface ApiService {
 
 
 
- //   @GET ("/v2.2/artists/{artistId}/images?apikey=NjEyMDFhMTktNjViNS00MjMyLWFlNzItMWI3YTUwNGMwNWJl")
-//    fun fetchArtist(@Path("artistId") artistId: String ): Call <ArtistImages<List<ImagesItem>>>
- //   companion object {
-
-    //    private const val BASE_URL = "http://ws.audioscrobbler.com/2.0/"
-    //    const val DEFAULT_PAGE_SIZE = 8
-    //    const val MAX_PAGE_SIZE = 8
-
-      /*  fun getApiService(): ApiService {
-            val url = BASE_URL
-            val moshi = Moshi.Builder()
-                .add(KotlinJsonAdapterFactory())
-                .build()
-
-            val loggingInterceptor = HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            }
-
-            val okkHttpclient = OkHttpClient.Builder()
-                .addInterceptor(loggingInterceptor)
-                .addNetworkInterceptor(loggingInterceptor)
-                .build()
-
-            val retrofit = Retrofit.Builder()
-                .baseUrl(url)
-                .client(okkHttpclient)
-                .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .build()
-            return retrofit.create(ApiService::class.java)
-        }*/
- //   }
 }

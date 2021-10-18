@@ -13,7 +13,9 @@
         <action
             android:id="@+id/action_songList_to_songItem"
             app:destination="@id/songItem" />
-
+        <argument
+            android:name="custonTrack"
+            app:argType="com.example.streamplayer.model.Tracks" />
     </fragment>
     <fragment
         android:id="@+id/songItem"
@@ -24,8 +26,6 @@
             android:id="@+id/action_songItem_to_songList"
 
             app:destination="@id/songList" />
-        <argument
-            android:name="custonTrack"
-            app:argType="com.example.streamplayer.model.Tracks" />
+
     </fragment>
 </navigation>
