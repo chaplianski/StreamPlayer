@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SongItem">
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.056"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/tv_artist_name"
+        android:layout_width="215dp"
+        android:layout_height="39dp"
+        android:layout_marginTop="4dp"
+        android:text="Artist"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.585"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="@+id/imageView" />
+
+    <TextView
+        android:id="@+id/tv_album_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Album name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/tv_artist_name"
+        app:layout_constraintTop_toBottomOf="@+id/tv_artist_name" />
+
+    <TextView
+        android:id="@+id/tv_year_of_albm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Year"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/tv_album_name"
+        app:layout_constraintTop_toBottomOf="@+id/tv_album_name" />
+
+    <TextView
+        android:id="@+id/tv_label_of_album"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:text="Label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.133"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="@+id/tv_year_of_albm" />
+
+    <TextView
+        android:id="@+id/tv_liric_of_song"
+        android:layout_width="wrap_content"
+        android:layout_height="380dp"
+        android:text="Liric"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.041"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_label_of_album"
+        app:layout_constraintVertical_bias="0.032" />
+
+    <TextView
+        android:id="@+id/tv_song_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="28dp"
+        android:text="Song Name"
+        app:layout_constraintBottom_toTopOf="@+id/bt_play_pause"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.047"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/bt_play_pause"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:src="@drawable/baseline_play_circle_outline_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/bt_next"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="24dp"
+        android:clickable="true"
+        android:src="@drawable/baseline_arrow_forward_ios_24"
+        app:layout_constraintBottom_toBottomOf="@+id/bt_play_pause"
+        app:layout_constraintStart_toEndOf="@+id/bt_play_pause"
+        app:layout_constraintTop_toTopOf="@+id/bt_play_pause" />
+
+    <ImageView
+        android:id="@+id/bt_back"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="24dp"
+        android:clickable="true"
+        android:src="@drawable/baseline_arrow_back_ios_24"
+        app:layout_constraintBottom_toBottomOf="@+id/bt_play_pause"
+        app:layout_constraintEnd_toStartOf="@+id/bt_play_pause"
+        app:layout_constraintTop_toTopOf="@+id/bt_play_pause" />
+
+    <ImageView
+        android:id="@+id/bt_stop"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="20dp"
+        android:src="@drawable/baseline_stop_24"
+        app:layout_constraintBottom_toBottomOf="@+id/bt_next"
+        app:layout_constraintStart_toEndOf="@+id/bt_next"
+        app:layout_constraintTop_toTopOf="@+id/bt_next" />
+
+    <ImageView
+        android:id="@+id/bt_to_hight_level"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="24dp"
+        android:src="@drawable/baseline_keyboard_capslock_24"
+        app:layout_constraintBottom_toBottomOf="@+id/bt_back"
+        app:layout_constraintEnd_toStartOf="@+id/bt_back"
+        app:layout_constraintTop_toTopOf="@+id/bt_back" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
