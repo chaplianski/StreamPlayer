@@ -62,7 +62,7 @@ class TrackListAdapter(val adapterContext: Context, val tracks: ArrayList<Tracks
 
         Glide.with(adapterContext).load(url)
            //        .error(R.drawable.ic_avatar_dog)
-            .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+         //   .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
             .centerCrop()
        //    .override(356, 237)
            //        .placeholder(R.drawable.ic_avatar_dog)
