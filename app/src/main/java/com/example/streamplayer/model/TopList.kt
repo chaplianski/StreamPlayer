@@ -40,6 +40,12 @@ data class Tracks(
 	@Json(name="artistImageUri")
 	var artistImageUri: String? = null,
 
+	@Json(name="artistChatNumber")
+	var artistChatNumber: Int? = null,
+
+	@Json(name="duration")
+	var duration: String? = "30000",
+
 
 ):Parcelable
 
