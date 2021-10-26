@@ -1,6 +1,7 @@
 package com.example.streamplayer.listsongs
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,6 +46,7 @@ class SongListFragment : Fragment()  {
         }
         viewModel.trackListLiveData.observe(this.viewLifecycleOwner, { tracks ->
             topListAdapter?.updateData(tracks)
+            Log.d("MyLog","tracks: $tracks ")
         })
 
       //  viewModel.fetch()

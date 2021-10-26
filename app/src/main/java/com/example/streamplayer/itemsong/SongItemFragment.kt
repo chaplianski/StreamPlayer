@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.os.RemoteException
@@ -13,6 +14,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -23,6 +25,8 @@ import com.example.streamplayer.databinding.FragmentSongItemBinding
 import com.example.streamplayer.listsongs.SongViewModel
 import com.example.streamplayer.model.Tracks
 import com.google.android.exoplayer2.ExoPlayer
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 
 class SongItemFragment : Fragment() {
@@ -47,6 +51,7 @@ class SongItemFragment : Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -105,16 +110,18 @@ class SongItemFragment : Fragment() {
         }
 
 
-        //TODO-Andrey
-        // насчет объявления Bind возможно ты прав, но я смогу посидеть подумать только после обеда
-        // код откуда я брал https://github.com/SergeyVinyar/AndroidAudioExample/tree/master
-        // там этого объявления не нашел
+        val intentPlayerService = Intent(activity, PlayerService::class.java)
+        val executor: ExecutorService = Executors.newFixedThreadPool(2)
+        serviceConnection?.let {
+            activity?.bindService(
+                intentPlayerService,
+                Context.BIND_AUTO_CREATE,
+                executor,
+                it
+            )
+        }
 
-        bindService(
-            Intent(this, PlayerService::class.java),
-            serviceConnection,
-            Context.BIND_AUTO_CREATE
-        )
+
 
 
 
@@ -265,6 +272,6 @@ class SongItemFragment : Fragment() {
             mediaController!!.unregisterCallback(callback as MediaControllerCompat.Callback)
             mediaController = null
         }
-    //    unbindService(serviceConnection)
+        serviceConnection?.let { activity?.unbindService(it) }
     }
 }

@@ -3,6 +3,8 @@ package com.example.streamplayer.audioservice
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.streamplayer.adapters.TrackListAdapter
+import com.example.streamplayer.itemsong.SongItemFragment
 import com.example.streamplayer.listsongs.SongViewModel
 import com.example.streamplayer.model.ImagesItem
 import com.example.streamplayer.model.Tracks
@@ -87,7 +89,8 @@ class MusicRepository  {
     // размер листа треков, думаю можно получить из переменной-счетчика, но значение объекта-трека нужно извлекать из листа треков
     // я уже подумывал, что его тоже можно брать из вьюмодели, но как то выглядело бы странно
 
-    private val maxIndex = data.length - 1
+
+    private val maxIndex = 20
     private var currentItemIndex = 0
 
     fun getNext(): Tracks {
@@ -102,7 +105,7 @@ class MusicRepository  {
 
     fun getCurrent(): Tracks {
         //TODO-Andrey
-        return data [currentItemIndex]
+        return tracks [currentItemIndex]
     }
 
 

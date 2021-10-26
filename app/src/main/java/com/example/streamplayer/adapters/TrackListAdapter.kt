@@ -36,6 +36,7 @@ class TrackListAdapter(
     @SuppressLint("NotifyDataSetChanged")
     fun updateData(list: List<Tracks>) {
         tracks = list
+        Log.d("MyLog", "listTracks $tracks")
         notifyDataSetChanged()
     }
 
@@ -80,4 +81,6 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .into(itemSongItemAristImage)
 
     }
+
+
 }
