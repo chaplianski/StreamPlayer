@@ -25,6 +25,9 @@ import com.example.streamplayer.databinding.FragmentSongItemBinding
 import com.example.streamplayer.listsongs.SongViewModel
 import com.example.streamplayer.model.Tracks
 import com.google.android.exoplayer2.ExoPlayer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -34,7 +37,7 @@ class SongItemFragment : Fragment() {
     lateinit var player: ExoPlayer
     var positionFromList = 0
     private val listSongViewModel: SongViewModel by activityViewModels()
-    private val songItemViewModel: SongItemViewModel by activityViewModels()
+ //   private val songItemViewModel: SongItemViewModel by activityViewModels()
     var trackList = emptyList<Tracks>()
 
     private var playerServiceBinder: PlayerService.PlayerServiceBinder? = null
@@ -61,8 +64,8 @@ class SongItemFragment : Fragment() {
         fetchView(positionFromList)
    //     playingPlayer(positionFromList)
 
-        Log.d("MyLog", "$positionFromList")
-        Log.d("MyLog", "$trackList")
+
+
 
         var playerSeekBar = binding.playerSeekBar
         playerSeekBar.setMax(100)
@@ -79,20 +82,27 @@ class SongItemFragment : Fragment() {
         }
 
 
+
         serviceConnection = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName, service: IBinder) {
                 playerServiceBinder = service as PlayerService.PlayerServiceBinder
                 try {
-                    val token = mediaController!!.sessionToken
-                    //    val token = MediaSession.Token
-                    mediaController = MediaControllerCompat(
-                        context,
-                        token
-                    )
-                    mediaController!!.registerCallback(callback as MediaControllerCompat.Callback)
-                    (callback as MediaControllerCompat.Callback).onPlaybackStateChanged(
-                        mediaController!!.getPlaybackState()
-                    )
+  //                  CoroutineScope(Dispatchers.Main).launch {
+                    val token = playerServiceBinder?.mediaSessionToken
+                    mediaController =
+                        token?.let {
+                            MediaControllerCompat(
+                                activity,
+                                it
+                            )
+                        }
+
+                        Log.d("MyLog", "MediaController: $mediaController")
+                        Log.d("MyLog", "Callback: $callback")
+                    mediaController?.registerCallback(callback as MediaControllerCompat.Callback)
+                    (callback as MediaControllerCompat.Callback).onPlaybackStateChanged(mediaController?.playbackState)
+
+ //               }
                 } catch (e: RemoteException) {
                     mediaController = null
                 }
