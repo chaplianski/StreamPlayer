@@ -121,7 +121,8 @@ class SongItemFragment : Fragment() {
 
 
         val intentPlayerService = Intent(activity, PlayerService::class.java)
-        val executor: ExecutorService = Executors.newFixedThreadPool(2)
+  //      val executor: ExecutorService = Executors.newFixedThreadPool(10)
+        val executor: ExecutorService =Executors.newSingleThreadScheduledExecutor()
         serviceConnection?.let {
             activity?.bindService(
                 intentPlayerService,
