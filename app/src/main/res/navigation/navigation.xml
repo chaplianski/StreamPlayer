@@ -19,7 +19,7 @@
     </fragment>
     <fragment
         android:id="@+id/songItem"
-        android:name="com.example.streamplayer.itemsong.SongItem"
+        android:name="com.example.streamplayer.itemsong.SongItemFragment"
         android:label="fragment_song_item"
         tools:layout="@layout/fragment_song_item" >
         <action

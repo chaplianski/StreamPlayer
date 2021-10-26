@@ -25,7 +25,7 @@ import com.example.streamplayer.model.Tracks
 import com.google.android.exoplayer2.ExoPlayer
 
 
-class SongItem : Fragment() {
+class SongItemFragment : Fragment() {
     lateinit var binding: FragmentSongItemBinding
     lateinit var player: ExoPlayer
     var positionFromList = 0
@@ -105,6 +105,10 @@ class SongItem : Fragment() {
         }
 
 
+        //TODO-Andrey
+        // насчет объявления Bind возможно ты прав, но я смогу посидеть подумать только после обеда
+        // код откуда я брал https://github.com/SergeyVinyar/AndroidAudioExample/tree/master
+        // там этого объявления не нашел
 
         bindService(
             Intent(this, PlayerService::class.java),

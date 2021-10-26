@@ -83,7 +83,9 @@ class MusicRepository  {
 
  //**************************************
 
-
+    //TODO-Andrey
+    // размер листа треков, думаю можно получить из переменной-счетчика, но значение объекта-трека нужно извлекать из листа треков
+    // я уже подумывал, что его тоже можно брать из вьюмодели, но как то выглядело бы странно
 
     private val maxIndex = data.length - 1
     private var currentItemIndex = 0
@@ -99,7 +101,7 @@ class MusicRepository  {
     }
 
     fun getCurrent(): Tracks {
-
+        //TODO-Andrey
         return data [currentItemIndex]
     }
 
