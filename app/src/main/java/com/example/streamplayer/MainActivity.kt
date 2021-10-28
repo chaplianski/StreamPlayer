@@ -35,4 +35,10 @@ class MainActivity : AppCompatActivity() {
         transaction.replace(R.id.container, songListFragment)
             .commit()
     }*/
+    companion object{
+    fun getContext(activity: MainActivity){
+        return getContext(activity)
+    }
+    }
+
 }

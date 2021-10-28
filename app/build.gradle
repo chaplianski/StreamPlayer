@@ -80,6 +80,12 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
 
+    // Room components
+    implementation "androidx.room:room-runtime:2.3.0"
+    kapt "androidx.room:room-compiler:2.3.0"
+    implementation "androidx.room:room-ktx:2.3.0"
+    androidTestImplementation "androidx.room:room-testing:2.3.0"
+
     implementation 'com.google.android.exoplayer:exoplayer:2.15.1'
     compile 'com.google.android.exoplayer:extension-okhttp:2.15.1'
   //  implementation 'com.google.android.exoplayer:exoplayer-core:2.15.1'

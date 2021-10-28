@@ -1,20 +1,24 @@
 package com.example.streamplayer.audioservice
 
+import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.room.Database
+import com.example.streamplayer.MainActivity
+import com.example.streamplayer.MyApplication
 import com.example.streamplayer.adapters.TrackListAdapter
+import com.example.streamplayer.db.TrackDatabase
 import com.example.streamplayer.itemsong.SongItemFragment
 import com.example.streamplayer.listsongs.SongViewModel
 import com.example.streamplayer.model.ImagesItem
 import com.example.streamplayer.model.Tracks
 import com.example.streamplayer.service.ApiService
 import com.example.streamplayer.service.ArtistImageApiService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
-class MusicRepository  {
+class MusicRepository (val context: Context)  {
 
     private val _trackListLiveData: MutableLiveData<List<Tracks>> = MutableLiveData()
     val trackListLiveData: LiveData<List<Tracks>>
@@ -52,16 +56,15 @@ class MusicRepository  {
                     resp[i].artistChatNumber = i+1
                     Log.d(SongViewModel.MY_LOG, "Resp: ${resp[i]}")
                     tracks.add(resp[i])
+                    val trackDatabase = TrackDatabase.getDatabase(context)
+                    trackDatabase.TrackDao().insertTrack(resp[i])
+
+                }
                 //    Log.d(SongViewModel.MY_LOG, "Tracks: ${tracks}")
                 }
                 _trackListLiveData.postValue(tracks)
             }
-        }
-    //    Log.d(SongViewModel.MY_LOG, "tracks: ${_trackListLiveData.toString()}")
-    //    Log.d(SongViewModel.MY_LOG, "TrackListLiveData: ${trackListLiveData}")
-        Log.d(SongViewModel.MY_LOG, "Tracks: ${tracks}")
-        return _trackListLiveData
-
+            return _trackListLiveData
     }
 
     private suspend fun fetchArtistImg(artistId: String): String {
@@ -85,12 +88,18 @@ class MusicRepository  {
 
  //**************************************
 
-    //TODO-Andrey
-    // размер листа треков, думаю можно получить из переменной-счетчика, но значение объекта-трека нужно извлекать из листа треков
-    // я уже подумывал, что его тоже можно брать из вьюмодели, но как то выглядело бы странно
+
+    val trackList = getNewTrackList()
 
 
-    private val maxIndex = 20
+    private fun getNewTrackList(): List<Tracks> {
+           val trackDatabase = TrackDatabase.getDatabase(context)
+           val list = trackDatabase.TrackDao().getAll()
+
+        return list
+    }
+
+    private val maxIndex = trackList.size
     private var currentItemIndex = 0
 
     fun getNext(): Tracks {
@@ -104,8 +113,8 @@ class MusicRepository  {
     }
 
     fun getCurrent(): Tracks {
-        //TODO-Andrey
-        return tracks [currentItemIndex]
+
+        return trackList[currentItemIndex]
     }
 
 

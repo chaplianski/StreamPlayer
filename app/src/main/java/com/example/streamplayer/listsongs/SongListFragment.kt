@@ -7,11 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.streamplayer.R
 import com.example.streamplayer.adapters.TrackListAdapter
 import com.example.streamplayer.model.Tracks
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 
 
@@ -24,16 +29,29 @@ class SongListFragment : Fragment()  {
      * lazy. This requires that viewModel not be referenced before onActivityCreated, which we
      * do in this Fragment.
      */
-    private val viewModel: SongViewModel by activityViewModels()
-
+//    private val viewModel: SongViewModel by activityViewModels()
+//    private val viewModel: SongViewModel by activityViewModels()
     var tracks = mutableListOf<Tracks>()
+
+    val viewModel: SongViewModel =
+        ListViewModelFactury(requireActivity().application).create(SongViewModel::class.java)
+ /*   val viewModelFactor = activity?.let { ListViewModelFactury(it.application) }
+    viewModel = viewModelFactor?.let {
+        ViewModelProvider(this,
+            it
+        ).get(SongViewModel::class.java)
+    }*/
+
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        Log.d("MyLog","viewModel: $viewModel ")
         return inflater.inflate(R.layout.fragment_song_list, container, false)
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -44,10 +62,15 @@ class SongListFragment : Fragment()  {
             layoutManager = LinearLayoutManager(requireActivity())
             adapter = topListAdapter
         }
-        viewModel.trackListLiveData.observe(this.viewLifecycleOwner, { tracks ->
-            topListAdapter?.updateData(tracks)
-            Log.d("MyLog","tracks: $tracks ")
-        })
+
+              if (viewModel != null) {
+                viewModel.trackListLiveData.observe(this.viewLifecycleOwner, { tracks ->
+                topListAdapter?.updateData(tracks)
+                Log.d("MyLog","tracks: $tracks ")
+            })
+        }
+    //    Log.d("MyLog","tracks: $viewModelFactor ")
+        Log.d("MyLog","viewModel: $viewModel ")
 
       //  viewModel.fetch()
 

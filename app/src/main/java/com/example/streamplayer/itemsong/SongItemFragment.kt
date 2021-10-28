@@ -285,4 +285,6 @@ class SongItemFragment : Fragment() {
         }
         serviceConnection?.let { activity?.unbindService(it) }
     }
+
+
 }
