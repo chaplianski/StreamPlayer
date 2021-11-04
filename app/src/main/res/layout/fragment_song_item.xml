@@ -11,9 +11,9 @@
         android:id="@+id/imageView"
         android:layout_width="350dp"
         android:layout_height="382dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.524"
+        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_chat_number"
         tools:src="@tools:sample/avatars" />
@@ -60,7 +60,7 @@
         android:id="@+id/bt_play_pause"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="16dp"
         android:clickable="true"
         android:src="@drawable/baseline_play_24"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -114,11 +114,11 @@
         android:id="@+id/tv_chat_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="16dp"
         android:text="Number in chat"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.452"
+        app:layout_constraintHorizontal_bias="0.456"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -151,15 +151,6 @@
         app:layout_constraintStart_toStartOf="@+id/textView4"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
-    <SeekBar
-        android:id="@+id/player_seek_bar"
-        android:layout_width="350dp
-"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="@+id/bt_stop"
-        app:layout_constraintStart_toStartOf="@+id/bt_to_hight_level"
-        tools:layout_editor_absoluteY="583dp" />
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
@@ -172,7 +163,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="top"
-        app:constraint_referenced_ids="player_seek_bar"
         tools:layout_editor_absoluteY="583dp" />
 
     <androidx.constraintlayout.widget.Barrier
@@ -180,7 +170,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="top"
-        app:constraint_referenced_ids="player_seek_bar"
         tools:layout_editor_absoluteY="583dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

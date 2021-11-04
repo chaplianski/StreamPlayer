@@ -1,6 +1,7 @@
 package com.example.streamplayer.model
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
@@ -18,6 +19,10 @@ data class TopList<T>(
 @Entity(tableName = "track_table")
 @Parcelize
 data class Tracks(
+
+	@PrimaryKey (autoGenerate = true)
+	@ColumnInfo (name = "trackId")
+	val trackId: Int? = null ,
 
 	@Json(name="albumName")
 	val albumName: String? ,
@@ -43,7 +48,6 @@ data class Tracks(
 	@Json(name="artistImageUri")
 	var artistImageUri: String? = null,
 
-	@PrimaryKey
 	@Json(name="artistChatNumber")
 	var artistChatNumber: Int? = null,
 
@@ -52,7 +56,6 @@ data class Tracks(
 
 
 ):Parcelable
-
 
 
 

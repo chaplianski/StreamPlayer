@@ -1,8 +1,7 @@
 package com.example.streamplayer.adapters
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +14,8 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.streamplayer.R
+import com.example.streamplayer.TrackPosition
+import com.example.streamplayer.audioservice.MusicRepository
 import com.example.streamplayer.model.Tracks
 
 
@@ -23,6 +24,9 @@ class TrackListAdapter(
 ) : RecyclerView.Adapter<TrackViewHolder>() {
 
     private var tracks: List<Tracks> = tracks
+
+
+
 
 
 
@@ -44,9 +48,11 @@ class TrackListAdapter(
         return tracks.size
     }
 
+
+
 }
 
-class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), MusicRepository.GetTrackPosition {
 
     var itemSongArtist: TextView = itemView.findViewById(R.id.item_song_artist)
     var itemSongTile: TextView = itemView.findViewById(R.id.item_song_title)
@@ -54,33 +60,58 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     var itemSongItemAristImage: ImageView = itemView.findViewById(R.id.iv_song_item_artist_image)
     var itemSongChatNumber: TextView = itemView.findViewById(R.id.tv_item_number)
 
+ //   interface PositionTransfer {
+   //     public fun onSetPositionValues (position: Int): Int
+ //   }
+
+ //   var callback: PositionTransfer? = null
+
+  //  fun registerCallBack(callback: PositionTransfer) {
+ //       this.callback = callback
+ //   }
+
+ //   var trackPosition: TrackPosition? = null
+
+
+
+
     fun onBind(trackItem: Tracks) {
         itemSongArtist.text = trackItem.artistName
         itemSongTile.text = trackItem.name
         itemTrack.setOnClickListener {
-            //    Toast.makeText(holder.itemView.context,"Click", Toast.LENGTH_SHORT).show()
 
-            val bundle = bundleOf("position" to position)
+         //   sendPosition (bindingAdapterPosition)
+            val tViewHolder = TrackViewHolder(itemView)
+            //     val musicRepository = MusicRepository(itemView.context)
+
+            val musicRepository = MusicRepository(itemView.context)
+
+        //    musicRepository.callback
+        //    musicRepository.callback?.let { it1 -> musicRepository.registerCallBack(it1) }
+            musicRepository.callback?.let { it1 -> musicRepository.getPosition(it1) }
+
+            val bundle = bundleOf("position" to bindingAdapterPosition)
             Navigation.createNavigateOnClickListener(R.id.action_songList_to_songItem, bundle)
                 .onClick(itemTrack)
+
         }
         itemSongChatNumber.text = trackItem.artistChatNumber.toString()
-
-        //    val adapterContext = holder.itemView.context
-        // val url = trackItem.artistImageUri
-
-        val url = "http://static.rhap.com/img/356x237/3/8/0/2/18962083_356x237.jpg"
-        Log.d("MyLog", "List images: ${url}")
 
         Glide.with(itemView.context).load(trackItem.artistImageUri)
             .error(R.drawable.ic_launcher_background)
             .override(200, 200)
-            //.override(, Target.SIZE_ORIGINAL)
             .centerCrop()
-            //        .placeholder(R.drawable.ic_avatar_dog)
             .into(itemSongItemAristImage)
 
     }
+
+    override fun onGetPositionValues(): Int {
+        return bindingAdapterPosition
+    }
+    //   fun sendPosition (position: Int){
+  //      callback?.onSetPositionValues(position)
+ //   }
+
 
 
 }

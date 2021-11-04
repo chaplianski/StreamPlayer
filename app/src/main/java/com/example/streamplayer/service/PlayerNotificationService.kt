@@ -109,19 +109,12 @@ class PlayerNotificationService : Service() {
         stopSelf()
     }
 
-
-
-
-
     private fun getPendingIntent(): PendingIntent? {
         val intent = Intent(applicationContext, MainActivity::class.java);
         return PendingIntent.getActivity(
             applicationContext, 0, intent,
             PendingIntent.FLAG_UPDATE_CURRENT)
     }
-
-
-
 
     /*   override fun onCreate() {
            super.onCreate()

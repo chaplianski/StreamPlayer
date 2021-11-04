@@ -1,49 +1,44 @@
 package com.example.streamplayer.audioservice
 
-import android.app.Application
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.room.Database
-import com.example.streamplayer.MainActivity
-import com.example.streamplayer.MyApplication
-import com.example.streamplayer.adapters.TrackListAdapter
+import com.example.streamplayer.TrackPosition
+import com.example.streamplayer.adapters.TrackViewHolder
 import com.example.streamplayer.db.TrackDatabase
-import com.example.streamplayer.itemsong.SongItemFragment
 import com.example.streamplayer.listsongs.SongViewModel
 import com.example.streamplayer.model.ImagesItem
 import com.example.streamplayer.model.Tracks
 import com.example.streamplayer.service.ApiService
 import com.example.streamplayer.service.ArtistImageApiService
-import kotlinx.coroutines.*
+import kotlin.properties.Delegates
 
-class MusicRepository (val context: Context)  {
+class MusicRepository (val context: Context) {
 
-    private val _trackListLiveData: MutableLiveData<List<Tracks>> = MutableLiveData()
-    val trackListLiveData: LiveData<List<Tracks>>
-        get() = _trackListLiveData
+ //   private val _trackListLiveData: MutableLiveData<List<Tracks>> = MutableLiveData()
+//    val trackListLiveData: LiveData<List<Tracks>>
+ //       get() = _trackListLiveData
     var tracks = mutableListOf<Tracks>()
+
 //    val trackListLiveData: LiveData<List<Tracks>> = fetch()
 
 
 
-    fun fetch(): MutableLiveData<List <Tracks>> {
-        CoroutineScope(Dispatchers.IO).launch() {
+    suspend fun fetch(): MutableList <Tracks> {
+
             val retrofit = ApiService.getApiService()
             val call = retrofit.fetchTracks()
 
             val response = call.execute()
 
             if (response.isSuccessful.not()) { // if failed call
-                Log.d(SongViewModel.MY_LOG, response.message() + response.errorBody()?.toString())
-                return@launch
+               Log.d(SongViewModel.MY_LOG, response.message() + response.errorBody()?.toString())
+        //        return@launch
             }
 
             val trackResponse = response.body()
             if (trackResponse == null) {
-                _trackListLiveData.postValue(emptyList())
-                return@launch
+         //       _trackListLiveData.postValue(emptyList())
+        //        return@launch
             } else {
 
                 val resp: List<Tracks> = trackResponse.tracks as List<Tracks>
@@ -54,17 +49,23 @@ class MusicRepository (val context: Context)  {
                     Log.d(SongViewModel.MY_LOG, "$artistImage")
                     resp[i].artistImageUri = artistImage
                     resp[i].artistChatNumber = i+1
-                    Log.d(SongViewModel.MY_LOG, "Resp: ${resp[i]}")
+    //                Log.d(SongViewModel.MY_LOG, "Resp: ${resp[i]}")
                     tracks.add(resp[i])
-                    val trackDatabase = TrackDatabase.getDatabase(context)
-                    trackDatabase.TrackDao().insertTrack(resp[i])
+         //           val trackDatabase = TrackDatabase.getDatabase(context)
+         //           trackDatabase.TrackDao().insertTrack(resp[i])
 
+    //                Log.d(SongViewModel.MY_LOG, "track: ${tracks}")
                 }
-                //    Log.d(SongViewModel.MY_LOG, "Tracks: ${tracks}")
-                }
-                _trackListLiveData.postValue(tracks)
+    //            Log.d(SongViewModel.MY_LOG, "2track: ${tracks}")
+                val trackDatabase = TrackDatabase.getDatabase(context)
+                trackDatabase.TrackDao().deleteAll()
+                tracks.forEachIndexed {i, value -> trackDatabase.TrackDao().insertTrack(tracks[i])}
+                return tracks
+
             }
-            return _trackListLiveData
+            //    _trackListLiveData.postValue(tracks)
+
+            return tracks //_trackListLiveData
     }
 
     private suspend fun fetchArtistImg(artistId: String): String {
@@ -89,33 +90,84 @@ class MusicRepository (val context: Context)  {
  //**************************************
 
 
-    val trackList = getNewTrackList()
 
 
+ //   val trackList = tracks as List<Tracks>
+//    val trackList = getNewTrackList()
+
+/*
     private fun getNewTrackList(): List<Tracks> {
            val trackDatabase = TrackDatabase.getDatabase(context)
            val list = trackDatabase.TrackDao().getAll()
-
+            Log.d("MyLog", "list: $list")
+        return list
+    }*/
+    suspend fun getTrackList(): List<Tracks> {
+           val trackDatabase = TrackDatabase.getDatabase(context)
+           val list = trackDatabase.TrackDao().getAll()
+            Log.d("MyLog", "list: $list")
         return list
     }
 
-    private val maxIndex = trackList.size
-    private var currentItemIndex = 0
+//***********************************
+    interface GetTrackPosition {
+        fun onGetPositionValues (): Int
+    }
 
-    fun getNext(): Tracks {
-        if (currentItemIndex == maxIndex) currentItemIndex = 0 else currentItemIndex++
+    var callback: GetTrackPosition? = null
+
+    fun registerCallBack(callback: GetTrackPosition) {
+        this.callback = callback
+    }
+
+    fun getPosition (callback: GetTrackPosition): Int? {
+        var position = callback?.onGetPositionValues()
+        Log.d("MyLog", "position in MusicRepository: $callback")
+        return position
+
+    }
+
+//*******************************************
+
+    var currentItemIndex = 1
+
+  //  override fun onSetPositionValues(position: Int): Int {
+
+  //      currentItemIndex = position+1
+
+ //       return position
+
+ //   }
+ //   var currentItemIndex = getT()
+
+
+//    private var currentItemIndex = 1
+    val maxIndex = 20
+
+
+
+    suspend fun getNext(): Tracks {
+     //   val maxIndex = getMaxIndex()
+        if (currentItemIndex == maxIndex) currentItemIndex = 1 else currentItemIndex++
         return getCurrent()
     }
 
-    fun getPrevious(): Tracks {
-        if (currentItemIndex == 0) currentItemIndex = maxIndex else currentItemIndex--
+    suspend fun getPrevious(): Tracks {
+    //    val maxIndex = getMaxIndex()
+        if (currentItemIndex == 1) currentItemIndex = maxIndex else currentItemIndex--
         return getCurrent()
     }
 
-    fun getCurrent(): Tracks {
+    suspend fun getCurrent(): Tracks {
 
-        return trackList[currentItemIndex]
+        val trackDatabase = TrackDatabase.getDatabase(context)
+        val list = trackDatabase.TrackDao().getTrackWithChatNumber(currentItemIndex)
+        Log.d("MyLog", "list: $list")
+        return list
+        //return trackList[currentItemIndex]
     }
+
+
 
 
 }
