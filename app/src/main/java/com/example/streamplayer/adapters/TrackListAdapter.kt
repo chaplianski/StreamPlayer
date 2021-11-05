@@ -2,6 +2,7 @@ package com.example.streamplayer.adapters
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.ProxyFileDescriptorCallback
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,22 +21,24 @@ import com.example.streamplayer.model.Tracks
 
 
 class TrackListAdapter(
-    tracks: List<Tracks>
+    tracks: List<Tracks>,
+    val callback: PositionTransfer
 ) : RecyclerView.Adapter<TrackViewHolder>() {
 
     private var tracks: List<Tracks> = tracks
 
-
-
-
+    interface PositionTransfer {
+        public fun onChangePosition(position: Int)
+    }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.item_song, parent, false)
-        return TrackViewHolder(v)
+        return TrackViewHolder(v, callback)
     }
 
-    override fun onBindViewHolder(holder: TrackViewHolder, position: Int) = holder.onBind(tracks[position])
+    override fun onBindViewHolder(holder: TrackViewHolder, position: Int) =
+        holder.onBind(tracks[position])
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateData(list: List<Tracks>) {
@@ -49,10 +52,10 @@ class TrackListAdapter(
     }
 
 
-
 }
 
-class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), MusicRepository.GetTrackPosition {
+class TrackViewHolder(itemView: View,
+                      val callback: TrackListAdapter.PositionTransfer) : RecyclerView.ViewHolder(itemView) {
 
     var itemSongArtist: TextView = itemView.findViewById(R.id.item_song_artist)
     var itemSongTile: TextView = itemView.findViewById(R.id.item_song_title)
@@ -60,17 +63,6 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), Music
     var itemSongItemAristImage: ImageView = itemView.findViewById(R.id.iv_song_item_artist_image)
     var itemSongChatNumber: TextView = itemView.findViewById(R.id.tv_item_number)
 
- //   interface PositionTransfer {
-   //     public fun onSetPositionValues (position: Int): Int
- //   }
-
- //   var callback: PositionTransfer? = null
-
-  //  fun registerCallBack(callback: PositionTransfer) {
- //       this.callback = callback
- //   }
-
- //   var trackPosition: TrackPosition? = null
 
 
 
@@ -80,15 +72,10 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), Music
         itemSongTile.text = trackItem.name
         itemTrack.setOnClickListener {
 
-         //   sendPosition (bindingAdapterPosition)
-            val tViewHolder = TrackViewHolder(itemView)
+            callback.onChangePosition (bindingAdapterPosition)
+
             //     val musicRepository = MusicRepository(itemView.context)
 
-            val musicRepository = MusicRepository(itemView.context)
-
-        //    musicRepository.callback
-        //    musicRepository.callback?.let { it1 -> musicRepository.registerCallBack(it1) }
-            musicRepository.callback?.let { it1 -> musicRepository.getPosition(it1) }
 
             val bundle = bundleOf("position" to bindingAdapterPosition)
             Navigation.createNavigateOnClickListener(R.id.action_songList_to_songItem, bundle)
@@ -105,13 +92,10 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), Music
 
     }
 
-    override fun onGetPositionValues(): Int {
-        return bindingAdapterPosition
-    }
-    //   fun sendPosition (position: Int){
-  //      callback?.onSetPositionValues(position)
- //   }
 
+    //   fun sendPosition (position: Int){
+    //      callback?.onSetPositionValues(position)
+    //   }
 
 
 }

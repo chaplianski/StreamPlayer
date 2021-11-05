@@ -51,7 +51,12 @@ class SongListFragment : Fragment()  {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        topListAdapter = TrackListAdapter(tracks as ArrayList<Tracks>)
+        topListAdapter = TrackListAdapter(tracks as ArrayList<Tracks>, object: TrackListAdapter.PositionTransfer{
+            override fun onChangePosition(position: Int) {
+                Log.d("MyLog","Position in ListFragment: $position ")
+            }
+
+        })
         view.findViewById<RecyclerView>(R.id.list_tracks_rv).apply {
             layoutManager = LinearLayoutManager(requireActivity())
             adapter = topListAdapter

@@ -110,22 +110,8 @@ class MusicRepository (val context: Context) {
     }
 
 //***********************************
-    interface GetTrackPosition {
-        fun onGetPositionValues (): Int
-    }
 
-    var callback: GetTrackPosition? = null
 
-    fun registerCallBack(callback: GetTrackPosition) {
-        this.callback = callback
-    }
-
-    fun getPosition (callback: GetTrackPosition): Int? {
-        var position = callback?.onGetPositionValues()
-        Log.d("MyLog", "position in MusicRepository: $callback")
-        return position
-
-    }
 
 //*******************************************
 
