@@ -1,13 +1,12 @@
 package com.example.streamplayer
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.findNavController
-import com.example.streamplayer.adapters.TrackViewHolder
 import com.example.streamplayer.audioservice.MusicRepository
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ViewModelStoreOwner {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -15,6 +14,7 @@ class MainActivity : AppCompatActivity() {
 
      //   OpenSongItemFragment()
      //   OpenSongListFragment()
+
 
 
 
@@ -37,10 +37,6 @@ class MainActivity : AppCompatActivity() {
         transaction.replace(R.id.container, songListFragment)
             .commit()
     }*/
-    companion object{
-    fun getContext(activity: MainActivity){
-        return getContext(activity)
-    }
-    }
+
 
 }

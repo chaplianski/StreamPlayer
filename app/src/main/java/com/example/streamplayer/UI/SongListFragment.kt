@@ -1,26 +1,21 @@
-package com.example.streamplayer.listsongs
+package com.example.streamplayer.UI
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.streamplayer.R
 import com.example.streamplayer.adapters.TrackListAdapter
 import com.example.streamplayer.model.Tracks
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.launch
+import com.example.streamplayer.viewmodel.ListViewModelFactury
+import com.example.streamplayer.viewmodel.PositionViewModel
+import com.example.streamplayer.viewmodel.SongViewModel
 import java.util.*
 
 
@@ -36,7 +31,8 @@ class SongListFragment : Fragment()  {
 //    private val viewModel: SongViewModel by activityViewModels()
 //    private val viewModel: SongViewModel by activityViewModels()
     var tracks = mutableListOf<Tracks>()
-        val viewModel: SongViewModel by viewModels {ListViewModelFactury(requireActivity().application)}
+      val positionViewModel: PositionViewModel by activityViewModels()
+      val viewModel: SongViewModel by viewModels { ListViewModelFactury(requireActivity().application) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,6 +50,9 @@ class SongListFragment : Fragment()  {
         topListAdapter = TrackListAdapter(tracks as ArrayList<Tracks>, object: TrackListAdapter.PositionTransfer{
             override fun onChangePosition(position: Int) {
                 Log.d("MyLog","Position in ListFragment: $position ")
+
+                positionViewModel.getTrackPosition(position)
+
             }
 
         })

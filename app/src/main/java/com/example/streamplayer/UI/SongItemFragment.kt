@@ -1,4 +1,4 @@
-package com.example.streamplayer.itemsong
+package com.example.streamplayer.UI
 
 import android.content.*
 import android.os.Build
@@ -16,36 +16,35 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.example.streamplayer.MusicRepositoryInstance
 import com.example.streamplayer.R
+import com.example.streamplayer.audioservice.MusicRepository
 import com.example.streamplayer.audioservice.PlayerService
 import com.example.streamplayer.databinding.FragmentSongItemBinding
 import com.example.streamplayer.model.Tracks
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import okhttp3.internal.notifyAll
+import com.example.streamplayer.viewmodel.SongItemViewModel
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 
 class SongItemFragment : Fragment() {
     lateinit var binding: FragmentSongItemBinding
- //   lateinit var player: ExoPlayer
     var positionFromList = 0
- //   private val listSongViewModel: SongViewModel by activityViewModels()
+
+    //   private val listSongViewModel: SongViewModel by activityViewModels()
 //    private val songItemViewModel: SongItemViewModel by activityViewModels()
-    val songItemViewModel: SongItemViewModel by viewModels() //{ListViewModelFactury(requireActivity().application)}
+     //{ListViewModelFactury(requireActivity().application)}
     var trackList = emptyList<Tracks>()
     lateinit var track: Tracks
- //   val viewModel: SongItemViewModel by activityViewModels()
+    val songItemViewModel: SongItemViewModel by viewModels()
+    //   val viewModel: SongItemViewModel by activityViewModels()
     private var playerServiceBinder: PlayerService.PlayerServiceBinder? = null
+    private var playerService: PlayerService? = null
     private var mediaController: MediaControllerCompat? = null
-    private var callback: MediaControllerCompat.Callback? = null
+    //    private var callback: MediaControllerCompat.Callback? = null
     private var serviceConnection: ServiceConnection? = null
-
-
-
-
+   // val musicRepository = activity?.let { MusicRepository(it) }
+    val musicRepository = MusicRepositoryInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,16 +58,13 @@ class SongItemFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        positionFromList = arguments?.getInt("position")!!
-
         songItemViewModel.trackLiveData.observe(this.viewLifecycleOwner, {
             track = it
+            Log.d("MyLog", "track in songItemFragment: $track")
             fetchItemView(it)
 
-
-            Log.d("MyLog", "track: $it")
         })
+
 
 
 /*
@@ -80,23 +76,39 @@ class SongItemFragment : Fragment() {
 
 */
 
+        var statusButtom = "play"
 
-
-        callback = object : MediaControllerCompat.Callback() {
+        var callback = object : MediaControllerCompat.Callback() {
             override fun onPlaybackStateChanged(state: PlaybackStateCompat) {
-                if (state == null) return
                 val playing = state.state == PlaybackStateCompat.STATE_PLAYING
-                binding.btPlayPause.setEnabled(!playing)
-                //       binding.btPlayPause.setEnabled(playing)   // pause
-                binding.btStop.setEnabled(playing)
+                when (state.state){
+                    1 -> {
+                        binding.btStop.setEnabled(playing)
+                        binding.btPlayPause.setImageResource(R.drawable.baseline_play_24)
+                        statusButtom = "pause"
+                    }
+                    2 -> {
+                        binding.btPlayPause.setImageResource(R.drawable.baseline_play_24)
+                        statusButtom = "pause"
+                    }
+                    3 ->  {
+                        binding.btPlayPause.setImageResource(R.drawable.baseline_pause_24)
+                        statusButtom = "play"
+                    }
+
+                }
+
+
             }
+
         }
 
         serviceConnection = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName, service: IBinder) {
                 playerServiceBinder = service as PlayerService.PlayerServiceBinder
+
                 try {
-                     val token = playerServiceBinder?.mediaSessionToken
+                    val token = playerServiceBinder?.mediaSessionToken
                     mediaController =
                         token?.let {
                             MediaControllerCompat(
@@ -105,13 +117,14 @@ class SongItemFragment : Fragment() {
                             )
                         }
 
-                        Log.d("MyLog", "Callback: $callback")
+
                     mediaController?.registerCallback(callback as MediaControllerCompat.Callback)
-                    (callback as MediaControllerCompat.Callback).onPlaybackStateChanged(mediaController?.playbackState)
+                    mediaController?.playbackState?.let { callback.onPlaybackStateChanged(it) }
+                //    (callback as MediaControllerCompat.Callback).onPlaybackStateChanged(mediaController?.playbackState)
                 } catch (e: RemoteException) {
                     mediaController = null
+                }
             }
-        }
 
             override fun onServiceDisconnected(name: ComponentName) {
                 playerServiceBinder = null
@@ -124,30 +137,28 @@ class SongItemFragment : Fragment() {
         }
 
         val intentPlayerService = Intent(activity, PlayerService::class.java)
-        val executor: ExecutorService =Executors.newSingleThreadScheduledExecutor()
+        val executor: ExecutorService = Executors.newSingleThreadScheduledExecutor()
         serviceConnection?.let {
             activity?.bindService(
                 intentPlayerService,
+                it,
                 Context.BIND_AUTO_CREATE,
-                executor,
-                it
+//                executor,
+                //               it
             )
         }
 
-        var play = true
+        //    var play = true
 
         binding.btPlayPause.setOnClickListener(View.OnClickListener {
 
-            if (!play){
-                binding.btPlayPause.setImageResource(R.drawable.baseline_play_24)
-                if (mediaController != null)
-                      mediaController!!.transportControls.pause()
-                play = true
-            }else{
-                binding.btPlayPause.setImageResource(R.drawable.baseline_pause_24)
+            if (statusButtom.equals("pause")) {
                 if (mediaController != null)
                 mediaController!!.transportControls.play()
-                play = false
+                statusButtom = "play"
+            } else if (statusButtom.equals("play")) {
+                if (mediaController != null)
+                    mediaController!!.transportControls.pause()
             }
         })
 
@@ -155,23 +166,17 @@ class SongItemFragment : Fragment() {
 
             if (mediaController != null)
                 mediaController!!.transportControls.stop()
+
         })
 
         binding.btNext.setOnClickListener(View.OnClickListener {
-        //    if(positionFromList < trackList.size-1){positionFromList++}
-        //    else positionFromList = 0
-        //    fetchView(positionFromList)
-
 
             if (mediaController != null)
-               mediaController!!.transportControls.skipToNext()
+                mediaController!!.transportControls.skipToNext()
 
         })
 
         binding.btBack.setOnClickListener(View.OnClickListener {
-        //    if (positionFromList > 0) positionFromList--
-        //    else positionFromList = trackList.size-1
-        //    fetchView(positionFromList)
 
             if (mediaController != null)
                 mediaController!!.transportControls.skipToPrevious()
@@ -181,12 +186,11 @@ class SongItemFragment : Fragment() {
             if (mediaController != null)
                 mediaController!!.transportControls.stop()
             findNavController().navigate(R.id.action_songItem_to_songList)
-
         }
 
     }
 
-    fun fetchView (positionFromList: Int) {
+    fun fetchView(positionFromList: Int) {
         if (trackList.size > positionFromList) {
             binding.tvArtistName.text = trackList.get(positionFromList).artistName
             binding.tvAlbumName.text = trackList.get(positionFromList).albumName
@@ -199,26 +203,23 @@ class SongItemFragment : Fragment() {
                 //.override(, Target.SIZE_ORIGINAL)
                 .centerCrop()
                 //        .placeholder(R.drawable.ic_avatar_dog)
-                .into(binding.imageView)
-
+               .into(binding.imageView)
         }
 
     }
+
     override fun onDestroy() {
         super.onDestroy()
         playerServiceBinder = null
         if (mediaController != null) {
-            mediaController!!.unregisterCallback(callback as MediaControllerCompat.Callback)
+            //        mediaController!!.unregisterCallback(callback as MediaControllerCompat.Callback)
             mediaController = null
         }
         serviceConnection?.let { activity?.unbindService(it) }
     }
 
 
-
-
-
-    fun fetchItemView (track: Tracks) {
+    fun fetchItemView(track: Tracks) {
 
         binding.tvArtistName.text = track.artistName
         binding.tvAlbumName.text = track.albumName
@@ -235,4 +236,8 @@ class SongItemFragment : Fragment() {
 
     }
 
-    }
+
+
+
+}
+

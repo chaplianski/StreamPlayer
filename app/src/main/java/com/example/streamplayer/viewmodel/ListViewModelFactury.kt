@@ -1,4 +1,4 @@
-package com.example.streamplayer.listsongs
+package com.example.streamplayer.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.ViewModel

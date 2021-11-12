@@ -2,22 +2,24 @@ package com.example.streamplayer.audioservice
 
 import android.content.Context
 import android.util.Log
-import com.example.streamplayer.TrackPosition
-import com.example.streamplayer.adapters.TrackViewHolder
 import com.example.streamplayer.db.TrackDatabase
-import com.example.streamplayer.listsongs.SongViewModel
 import com.example.streamplayer.model.ImagesItem
 import com.example.streamplayer.model.Tracks
-import com.example.streamplayer.service.ApiService
 import com.example.streamplayer.service.ArtistImageApiService
-import kotlin.properties.Delegates
+import com.example.streamplayer.service.TopListApiService
+import com.example.streamplayer.viewmodel.PositionViewModel
+import com.example.streamplayer.viewmodel.SongViewModel
 
-class MusicRepository (val context: Context) {
+
+
+
+class MusicRepository(val context: Context) {
 
  //   private val _trackListLiveData: MutableLiveData<List<Tracks>> = MutableLiveData()
 //    val trackListLiveData: LiveData<List<Tracks>>
  //       get() = _trackListLiveData
     var tracks = mutableListOf<Tracks>()
+
 
 //    val trackListLiveData: LiveData<List<Tracks>> = fetch()
 
@@ -25,7 +27,7 @@ class MusicRepository (val context: Context) {
 
     suspend fun fetch(): MutableList <Tracks> {
 
-            val retrofit = ApiService.getApiService()
+            val retrofit = TopListApiService.getApiService()
             val call = retrofit.fetchTracks()
 
             val response = call.execute()
@@ -105,56 +107,43 @@ class MusicRepository (val context: Context) {
     suspend fun getTrackList(): List<Tracks> {
            val trackDatabase = TrackDatabase.getDatabase(context)
            val list = trackDatabase.TrackDao().getAll()
-            Log.d("MyLog", "list: $list")
+
         return list
     }
 
 //***********************************
 
 
+    var currentItemIndex = PositionViewModel.getV()+1
+
+
 
 //*******************************************
 
-    var currentItemIndex = 1
-
-  //  override fun onSetPositionValues(position: Int): Int {
-
-  //      currentItemIndex = position+1
-
- //       return position
-
- //   }
- //   var currentItemIndex = getT()
-
-
-//    private var currentItemIndex = 1
     val maxIndex = 20
-
-
 
     suspend fun getNext(): Tracks {
      //   val maxIndex = getMaxIndex()
+
+        Log.d("MyLog", "Position next in Repository: $currentItemIndex")
         if (currentItemIndex == maxIndex) currentItemIndex = 1 else currentItemIndex++
         return getCurrent()
     }
 
     suspend fun getPrevious(): Tracks {
     //    val maxIndex = getMaxIndex()
+        Log.d("MyLog", "Position back in Repository: $currentItemIndex")
         if (currentItemIndex == 1) currentItemIndex = maxIndex else currentItemIndex--
         return getCurrent()
     }
 
     suspend fun getCurrent(): Tracks {
-
         val trackDatabase = TrackDatabase.getDatabase(context)
         val list = trackDatabase.TrackDao().getTrackWithChatNumber(currentItemIndex)
-        Log.d("MyLog", "list: $list")
+        Log.d("MyLog", "Track from repository: $list")
         return list
         //return trackList[currentItemIndex]
     }
-
-
-
 
 }
 

@@ -1,8 +1,6 @@
 package com.example.streamplayer.adapters
 
 import android.annotation.SuppressLint
-import android.os.Bundle
-import android.os.ProxyFileDescriptorCallback
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +13,6 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.streamplayer.R
-import com.example.streamplayer.TrackPosition
-import com.example.streamplayer.audioservice.MusicRepository
 import com.example.streamplayer.model.Tracks
 
 
