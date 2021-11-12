@@ -19,7 +19,7 @@ import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import kotlinx.coroutines.Job
 
-
+/*
 class PlayerNotificationService : Service() {
 
     private lateinit var mPlayer: SimpleExoPlayer
@@ -97,11 +97,6 @@ class PlayerNotificationService : Service() {
         }
     }
 
-
-
-
-
-
     //removing service when user swipe out our app
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
@@ -122,9 +117,6 @@ class PlayerNotificationService : Service() {
                applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
        }*/
 
-
-
-
     override fun onCreate() {
     super.onCreate()
 
@@ -139,11 +131,6 @@ class PlayerNotificationService : Service() {
  //   mPlayer.prepare(getListOfMediaSource())
 
         val mediaItem: MediaItem = MediaItem.fromUri(url)
-
-
-
-
-
         mPlayer.setMediaItem(mediaItem)
         mPlayer.prepare()
 
@@ -165,75 +152,6 @@ class PlayerNotificationService : Service() {
     }
 //   playerNotificationManager.setPlayer(mPlayer)
 }
-
-
-
-
-/*
-    private fun commandStart(startTime: Long) {
-        if (isServiceStarted) {
-            return
-        }
-        Log.d("MyLog", "commandStart()")
-        try {
-            moveToStartedState()
-            startForegroundAndShowNotification()
-            continueTimer(startTime)
-            if (startTime == 0L) commandStop()
-
-        } finally {
-            isServiceStarted = true
-        }
-    }
-*/
-
-/*
-    private fun continueTimer(startTime: Long) {
-        job = GlobalScope.launch(Dispatchers.Main) {
-            while (true) {
-                playerNotificationManager?.notify(
-                    notificationId,
-                    getNotification(
-                        ("Plaer play")
-                    )
-                )
-                delay(INTERVAL)
-            }
-        }
-    }
-*/
-    private fun commandStop() {
-        if (!isServiceStarted) {
-            return
-        }
-        Log.d("MyLog", "commandStop()")
-        try {
-            job?.cancel()
-            stopForeground(true)
-            stopSelf()
-        } finally {
-            isServiceStarted = false
-        }
-    }
-
-    private fun moveToStartedState() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Log.d("MyLog", "moveToStartedState(): Running on Android O or higher")
-            startForegroundService(Intent(this, PlayerNotificationService::class.java))
-        } else {
-            Log.d("MyLog", "moveToStartedState(): Running on Android N or lower")
-            startService(Intent(this, PlayerNotificationService::class.java))
-        }
-    }
-/*
-    private fun startForegroundAndShowNotification() {
-        createChannel()
-        val notification = getNotification("content")
-        startForeground(notificationId, notification)
-
-    }*/
-
-  //  private fun getNotification(content: String) = builder.setContentText(content).build()
 
     private fun createChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -258,11 +176,6 @@ override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     private fun getListOfMediaSource(): ConcatenatingMediaSource {
     val mediaUrlList = ArrayList<String>()
     mediaUrlList.add(url)
-//    mediaUrlList.add("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8")
-//    mediaUrlList.add("http://d3rlna7iyyu8wu.cloudfront.net/skip_armstrong/skip_armstrong_stereo_subs.m3u8")
-//    mediaUrlList.add("https://moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8")
-//    mediaUrlList.add("https://multiplatform-f.akamaihd.net/i/multi/will/bunny/big_buck_bunny_,640x360_400,640x360_700,640x360_1000,950x540_1500,.f4v.csmil/master.m3u8")
-
     val concatenatingMediaSource = ConcatenatingMediaSource()
     for (mediaUrl in mediaUrlList) {
         buildMediaSource(mediaUrl)?.let { concatenatingMediaSource.addMediaSource(it) }
@@ -279,19 +192,12 @@ override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     return HlsMediaSource.Factory(dataSourceFactory).createMediaSource(uri)
 }
 
-
 // detach player
 private fun NotificationCompat.Builder.addAction(exoPlay: Int) {
     mPlayer.play()
 }
 
-    companion object {
-        const val COMMAND_START = "COMMAND_START"
-        const val COMMAND_STOP = "COMMAND_STOP"
-        const val COMMAND_ID = "COMMAND_ID"
-        const val STARTED_TIMER_TIME_MS = "STARTED_TIMER_TIME"
-        private const val INTERVAL = 1000L
-    }
 }
+*/
 
 

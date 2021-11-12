@@ -1,6 +1,9 @@
 package com.example.streamplayer.UI
 
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
@@ -16,9 +19,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.example.streamplayer.MusicRepositoryInstance
+import com.example.streamplayer.RepositoryInstance
 import com.example.streamplayer.R
-import com.example.streamplayer.audioservice.MusicRepository
 import com.example.streamplayer.audioservice.PlayerService
 import com.example.streamplayer.databinding.FragmentSongItemBinding
 import com.example.streamplayer.model.Tracks
@@ -33,18 +35,21 @@ class SongItemFragment : Fragment() {
 
     //   private val listSongViewModel: SongViewModel by activityViewModels()
 //    private val songItemViewModel: SongItemViewModel by activityViewModels()
-     //{ListViewModelFactury(requireActivity().application)}
+    //{ListViewModelFactury(requireActivity().application)}
     var trackList = emptyList<Tracks>()
     lateinit var track: Tracks
     val songItemViewModel: SongItemViewModel by viewModels()
+
     //   val viewModel: SongItemViewModel by activityViewModels()
     private var playerServiceBinder: PlayerService.PlayerServiceBinder? = null
     private var playerService: PlayerService? = null
     private var mediaController: MediaControllerCompat? = null
+
     //    private var callback: MediaControllerCompat.Callback? = null
     private var serviceConnection: ServiceConnection? = null
-   // val musicRepository = activity?.let { MusicRepository(it) }
-    val musicRepository = MusicRepositoryInstance()
+
+    // val musicRepository = activity?.let { MusicRepository(it) }
+    val musicRepository = RepositoryInstance.getMusicRepository()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,8 +70,6 @@ class SongItemFragment : Fragment() {
 
         })
 
-
-
 /*
         songItemViewModel.trackItemLiveData.observe(this.viewLifecycleOwner, {
             trackList = it
@@ -81,7 +84,7 @@ class SongItemFragment : Fragment() {
         var callback = object : MediaControllerCompat.Callback() {
             override fun onPlaybackStateChanged(state: PlaybackStateCompat) {
                 val playing = state.state == PlaybackStateCompat.STATE_PLAYING
-                when (state.state){
+                when (state.state) {
                     1 -> {
                         binding.btStop.setEnabled(playing)
                         binding.btPlayPause.setImageResource(R.drawable.baseline_play_24)
@@ -91,16 +94,12 @@ class SongItemFragment : Fragment() {
                         binding.btPlayPause.setImageResource(R.drawable.baseline_play_24)
                         statusButtom = "pause"
                     }
-                    3 ->  {
+                    3 -> {
                         binding.btPlayPause.setImageResource(R.drawable.baseline_pause_24)
                         statusButtom = "play"
                     }
-
                 }
-
-
             }
-
         }
 
         serviceConnection = object : ServiceConnection {
@@ -120,7 +119,7 @@ class SongItemFragment : Fragment() {
 
                     mediaController?.registerCallback(callback as MediaControllerCompat.Callback)
                     mediaController?.playbackState?.let { callback.onPlaybackStateChanged(it) }
-                //    (callback as MediaControllerCompat.Callback).onPlaybackStateChanged(mediaController?.playbackState)
+                    //    (callback as MediaControllerCompat.Callback).onPlaybackStateChanged(mediaController?.playbackState)
                 } catch (e: RemoteException) {
                     mediaController = null
                 }
@@ -143,18 +142,14 @@ class SongItemFragment : Fragment() {
                 intentPlayerService,
                 it,
                 Context.BIND_AUTO_CREATE,
-//                executor,
-                //               it
             )
         }
-
-        //    var play = true
 
         binding.btPlayPause.setOnClickListener(View.OnClickListener {
 
             if (statusButtom.equals("pause")) {
                 if (mediaController != null)
-                mediaController!!.transportControls.play()
+                    mediaController!!.transportControls.play()
                 statusButtom = "play"
             } else if (statusButtom.equals("play")) {
                 if (mediaController != null)
@@ -190,24 +185,6 @@ class SongItemFragment : Fragment() {
 
     }
 
-    fun fetchView(positionFromList: Int) {
-        if (trackList.size > positionFromList) {
-            binding.tvArtistName.text = trackList.get(positionFromList).artistName
-            binding.tvAlbumName.text = trackList.get(positionFromList).albumName
-            binding.tvSongName.text = trackList.get(positionFromList).name
-            binding.tvChatNumber.text = "Number in chat # ${positionFromList + 1}"
-
-            Glide.with(this).load(trackList.get(positionFromList).artistImageUri)
-                .error(R.drawable.ic_launcher_background)
-                .override(1800, 1800)
-                //.override(, Target.SIZE_ORIGINAL)
-                .centerCrop()
-                //        .placeholder(R.drawable.ic_avatar_dog)
-               .into(binding.imageView)
-        }
-
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         playerServiceBinder = null
@@ -233,11 +210,25 @@ class SongItemFragment : Fragment() {
             .centerCrop()
             //        .placeholder(R.drawable.ic_avatar_dog)
             .into(binding.imageView)
-
     }
+/*
+    fun fetchView(positionFromList: Int) {
+        if (trackList.size > positionFromList) {
+            binding.tvArtistName.text = trackList.get(positionFromList).artistName
+            binding.tvAlbumName.text = trackList.get(positionFromList).albumName
+            binding.tvSongName.text = trackList.get(positionFromList).name
+            binding.tvChatNumber.text = "Number in chat # ${positionFromList + 1}"
 
-
-
+            Glide.with(this).load(trackList.get(positionFromList).artistImageUri)
+                .error(R.drawable.ic_launcher_background)
+                .override(1800, 1800)
+                //.override(, Target.SIZE_ORIGINAL)
+                .centerCrop()
+                //        .placeholder(R.drawable.ic_avatar_dog)
+                .into(binding.imageView)
+        }
+    }
+*/
 
 }
 

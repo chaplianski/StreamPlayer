@@ -114,12 +114,7 @@ class MusicRepository(val context: Context) {
 //***********************************
 
 
-    var currentItemIndex = PositionViewModel.getV()+1
-
-
-
-//*******************************************
-
+    var currentItemIndex = PositionViewModel.getPosition()+1
     val maxIndex = 20
 
     suspend fun getNext(): Tracks {

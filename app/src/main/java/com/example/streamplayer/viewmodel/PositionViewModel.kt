@@ -6,37 +6,25 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.example.streamplayer.audioservice.MusicRepository
 
-class PositionViewModel (application: Application): AndroidViewModel(application) {
+class PositionViewModel(application: Application) : AndroidViewModel(application) {
 
-        val trackPosition: MutableLiveData <Int> = MutableLiveData<Int>()
-        val musicRepository = MusicRepository(getApplication())
-     //   val position = trackPosition.value
+    //    val trackPosition: MutableLiveData <Int> = MutableLiveData<Int>()
+    //    val musicRepository = MusicRepository(getApplication())
+    //   val position = trackPosition.value
 
 
     fun getTrackPosition(position: Int): Int {
         Log.d("MyLog", "Position in PositionViewModel: $position")
-
         pos = position
         return position
     }
 
+    companion object {
 
-
-
-
-companion object {
-
-    var pos = 0
-
-    fun getV(): Int
-    {
-        return pos
+        var pos = 0
+        fun getPosition(): Int {
+            return pos
+        }
     }
-
-}
-
-
-
-
 }
 

@@ -46,12 +46,10 @@ class TrackListAdapter(
     override fun getItemCount(): Int {
         return tracks.size
     }
-
-
 }
 
-class TrackViewHolder(itemView: View,
-                      val callback: TrackListAdapter.PositionTransfer) : RecyclerView.ViewHolder(itemView) {
+    class TrackViewHolder(itemView: View,
+      val callback: TrackListAdapter.PositionTransfer) : RecyclerView.ViewHolder(itemView) {
 
     var itemSongArtist: TextView = itemView.findViewById(R.id.item_song_artist)
     var itemSongTile: TextView = itemView.findViewById(R.id.item_song_title)
@@ -59,24 +57,14 @@ class TrackViewHolder(itemView: View,
     var itemSongItemAristImage: ImageView = itemView.findViewById(R.id.iv_song_item_artist_image)
     var itemSongChatNumber: TextView = itemView.findViewById(R.id.tv_item_number)
 
-
-
-
-
     fun onBind(trackItem: Tracks) {
         itemSongArtist.text = trackItem.artistName
         itemSongTile.text = trackItem.name
         itemTrack.setOnClickListener {
-
             callback.onChangePosition (bindingAdapterPosition)
-
-            //     val musicRepository = MusicRepository(itemView.context)
-
-
             val bundle = bundleOf("position" to bindingAdapterPosition)
             Navigation.createNavigateOnClickListener(R.id.action_songList_to_songItem, bundle)
                 .onClick(itemTrack)
-
         }
         itemSongChatNumber.text = trackItem.artistChatNumber.toString()
 
@@ -85,13 +73,5 @@ class TrackViewHolder(itemView: View,
             .override(200, 200)
             .centerCrop()
             .into(itemSongItemAristImage)
-
     }
-
-
-    //   fun sendPosition (position: Int){
-    //      callback?.onSetPositionValues(position)
-    //   }
-
-
 }
