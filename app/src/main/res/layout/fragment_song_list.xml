@@ -7,14 +7,56 @@
     tools:context=".UI.SongListFragment">
 
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:indeterminateDrawable="@drawable/rotate_download_icon"
+        android:scaleX="0.20"
+        android:scaleY="0.20"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_top_ad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Top 20 Napster"
+        android:textSize="34sp"
+
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.612" />
+
+    <TextView
+        android:id="@+id/tv_note_wait"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please wait for end download"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_top_ad"
+        app:layout_constraintVertical_bias="0.0" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_tracks_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.132"
-        tools:layout_editor_absoluteX="0dp"
+        app:layout_constraintVertical_bias="1.0"
         tools:listitem="@layout/item_song" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

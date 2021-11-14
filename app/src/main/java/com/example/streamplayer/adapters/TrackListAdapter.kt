@@ -6,14 +6,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.os.bundleOf
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.streamplayer.R
 import com.example.streamplayer.model.Tracks
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class TrackListAdapter(
@@ -23,6 +29,7 @@ class TrackListAdapter(
 
     private var tracks: List<Tracks> = tracks
 
+
     interface PositionTransfer {
         public fun onChangePosition(position: Int)
     }
@@ -30,11 +37,16 @@ class TrackListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.item_song, parent, false)
+
         return TrackViewHolder(v, callback)
     }
 
-    override fun onBindViewHolder(holder: TrackViewHolder, position: Int) =
+    override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         holder.onBind(tracks[position])
+    //    holder.progressBarIndicator.visibility = View.GONE
+
+    }
+
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateData(list: List<Tracks>) {
@@ -46,6 +58,7 @@ class TrackListAdapter(
     override fun getItemCount(): Int {
         return tracks.size
     }
+
 }
 
     class TrackViewHolder(itemView: View,
@@ -56,6 +69,8 @@ class TrackListAdapter(
     var itemTrack: CardView = itemView.findViewById(R.id.item_track)
     var itemSongItemAristImage: ImageView = itemView.findViewById(R.id.iv_song_item_artist_image)
     var itemSongChatNumber: TextView = itemView.findViewById(R.id.tv_item_number)
+
+
 
     fun onBind(trackItem: Tracks) {
         itemSongArtist.text = trackItem.artistName

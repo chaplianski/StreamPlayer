@@ -4,7 +4,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -64,6 +67,9 @@ class SongListFragment : Fragment()  {
         //    if (viewModel != null) {
                 viewModel.trackListLiveData.observe(this@SongListFragment.viewLifecycleOwner, { tracks ->
                     topListAdapter?.updateData(tracks)
+                    view.findViewById<ProgressBar>(R.id.progressBar).visibility = GONE
+                    view.findViewById<TextView>(R.id.tv_top_ad).visibility = GONE
+                    view.findViewById<TextView>(R.id.tv_note_wait).visibility = GONE
                     Log.d("MyLog", "tracks: $tracks ")
                 })
         //    }

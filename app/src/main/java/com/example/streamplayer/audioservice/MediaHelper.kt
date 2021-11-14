@@ -17,10 +17,10 @@ class MediaHelper {
                 context!!
             )
             builder
-        //        .setContentTitle(description.title)
-        //        .setContentText(description.subtitle)
-        //        .setSubText(description.description)
-        //        .setLargeIcon(description.iconBitmap)
+//                .setContentTitle(description.title)
+//                .setContentText(description.subtitle)
+//                .setSubText(description.description)
+//                .setLargeIcon(description.iconBitmap)
                 .setContentIntent(controller.sessionActivity)
                 .setDeleteIntent(
                     MediaButtonReceiver.buildMediaButtonPendingIntent(

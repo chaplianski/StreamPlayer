@@ -97,7 +97,8 @@
         android:layout_marginStart="20dp"
         android:src="@drawable/baseline_stop_24"
         app:layout_constraintBottom_toBottomOf="@+id/bt_next"
-        app:layout_constraintStart_toEndOf="@+id/bt_next" />
+        app:layout_constraintStart_toEndOf="@+id/bt_next"
+        app:layout_constraintTop_toTopOf="@+id/bt_next" />
 
     <ImageView
         android:id="@+id/bt_to_hight_level"

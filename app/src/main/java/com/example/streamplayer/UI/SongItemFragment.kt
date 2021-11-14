@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.example.streamplayer.MainActivity
 import com.example.streamplayer.RepositoryInstance
 import com.example.streamplayer.R
 import com.example.streamplayer.audioservice.PlayerService
@@ -84,9 +85,11 @@ class SongItemFragment : Fragment() {
         var callback = object : MediaControllerCompat.Callback() {
             override fun onPlaybackStateChanged(state: PlaybackStateCompat) {
                 val playing = state.state == PlaybackStateCompat.STATE_PLAYING
+                val stoping = state.state == PlaybackStateCompat.STATE_STOPPED
                 when (state.state) {
                     1 -> {
-                        binding.btStop.setEnabled(playing)
+                        binding.btStop.setEnabled(!playing)
+                    //    binding.btStop.setEnabled(stoping)
                         binding.btPlayPause.setImageResource(R.drawable.baseline_play_24)
                         statusButtom = "pause"
                     }
@@ -96,6 +99,7 @@ class SongItemFragment : Fragment() {
                     }
                     3 -> {
                         binding.btPlayPause.setImageResource(R.drawable.baseline_pause_24)
+                        binding.btPlayPause.setEnabled(playing)
                         statusButtom = "play"
                     }
                 }
@@ -115,7 +119,6 @@ class SongItemFragment : Fragment() {
                                 it
                             )
                         }
-
 
                     mediaController?.registerCallback(callback as MediaControllerCompat.Callback)
                     mediaController?.playbackState?.let { callback.onPlaybackStateChanged(it) }
@@ -229,6 +232,7 @@ class SongItemFragment : Fragment() {
         }
     }
 */
+
 
 }
 
