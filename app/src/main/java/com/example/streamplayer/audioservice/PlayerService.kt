@@ -45,8 +45,6 @@ import java.io.File
 class PlayerService() : Service() {
     private val NOTIFICATION_ID = 404
     private val NOTIFICATION_DEFAULT_CHANNEL_ID = "default_channel"
-
-    //    private var channelId = "channelId"
     private val metadataBuilder = MediaMetadataCompat.Builder()
     private val stateBuilder = PlaybackStateCompat.Builder().setActions(
         PlaybackStateCompat.ACTION_PLAY
