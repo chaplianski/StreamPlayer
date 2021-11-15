@@ -115,18 +115,16 @@ class MusicRepository(val context: Context) {
 
 
     var currentItemIndex = PositionViewModel.getPosition()+1
+
     val maxIndex = 20
 
     suspend fun getNext(): Tracks {
-     //   val maxIndex = getMaxIndex()
-
-        Log.d("MyLog", "Position next in Repository: $currentItemIndex")
+     Log.d("MyLog", "Position next in Repository: $currentItemIndex")
         if (currentItemIndex == maxIndex) currentItemIndex = 1 else currentItemIndex++
         return getCurrent()
     }
 
     suspend fun getPrevious(): Tracks {
-    //    val maxIndex = getMaxIndex()
         Log.d("MyLog", "Position back in Repository: $currentItemIndex")
         if (currentItemIndex == 1) currentItemIndex = maxIndex else currentItemIndex--
         return getCurrent()

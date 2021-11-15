@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
  //   var trackItemLiveData: MutableLiveData<List<Tracks>> = MutableLiveData()
     var trackLiveData: MutableLiveData<Tracks> = MutableLiveData()
  //   val repository = RepositoryInstance.getMusicRepository()
-    val repository = MusicRepository(application)
+    val repository = RepositoryInstance.getMusicRepository()
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
             trackLiveData.postValue(track)
 
            Log.d("MyLog", "sViewModel track: $track")
-           Log.d("MyLog", "sViewModel trackLiveData.value: ${trackLiveData.value}")
+
         }
     }
 

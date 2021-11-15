@@ -121,8 +121,11 @@ class SongItemFragment : Fragment() {
                         }
 
                     mediaController?.registerCallback(callback as MediaControllerCompat.Callback)
-                    mediaController?.playbackState?.let { callback.onPlaybackStateChanged(it) }
-                    //    (callback as MediaControllerCompat.Callback).onPlaybackStateChanged(mediaController?.playbackState)
+                    mediaController?.playbackState?.let {
+                        callback.onPlaybackStateChanged(it)
+ //                       (callback as MediaControllerCompat.Callback).onPlaybackStateChanged(
+ //                           mediaController!!.playbackState)
+                    }
                 } catch (e: RemoteException) {
                     mediaController = null
                 }
