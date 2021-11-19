@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion "30.0.3"
 
     defaultConfig {
@@ -67,6 +67,10 @@ dependencies {
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.12.0'
     implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
+ //   implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.0"
+ //   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 
     implementation 'com.github.bumptech.glide:glide:4.12.0'
 

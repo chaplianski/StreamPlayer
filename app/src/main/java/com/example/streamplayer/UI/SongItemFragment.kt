@@ -4,7 +4,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.os.RemoteException
@@ -14,18 +13,24 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.example.streamplayer.MainActivity
-import com.example.streamplayer.RepositoryInstance
 import com.example.streamplayer.R
+import com.example.streamplayer.RepositoryInstance
 import com.example.streamplayer.audioservice.PlayerService
 import com.example.streamplayer.databinding.FragmentSongItemBinding
 import com.example.streamplayer.model.Tracks
 import com.example.streamplayer.viewmodel.SongItemViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -38,10 +43,13 @@ class SongItemFragment : Fragment() {
 //    private val songItemViewModel: SongItemViewModel by activityViewModels()
     //{ListViewModelFactury(requireActivity().application)}
     var trackList = emptyList<Tracks>()
-    lateinit var track: Tracks
-    val songItemViewModel: SongItemViewModel by viewModels()
+ //   lateinit var track: Tracks
 
-    //   val viewModel: SongItemViewModel by activityViewModels()
+
+
+ //   val songItemViewModel: SongItemViewModel by viewModels()
+
+//    val songItemViewModel: SongItemViewModel by activityViewModels()
     private var playerServiceBinder: PlayerService.PlayerServiceBinder? = null
     private var playerService: PlayerService? = null
     private var mediaController: MediaControllerCompat? = null
@@ -60,16 +68,40 @@ class SongItemFragment : Fragment() {
         return binding.root
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        songItemViewModel.trackLiveData.observe(this.viewLifecycleOwner, {
+    /*    songItemViewModel.trackLiveData.observe(this.viewLifecycleOwner, {
             track = it
             Log.d("MyLog", "track in songItemFragment: $track")
             fetchItemView(it)
 
         })
+*/
+        val repository = RepositoryInstance.getMusicRepository()
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                  repository?.getCurrent().collect{
+                        fetchItemView(it)
+                  }
+
+
+            }
+        }
+
+
+     /*
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                track = flow {
+
+                }
+                fetchItemView(it)
+            }
+        }*/
 
 /*
         songItemViewModel.trackItemLiveData.observe(this.viewLifecycleOwner, {

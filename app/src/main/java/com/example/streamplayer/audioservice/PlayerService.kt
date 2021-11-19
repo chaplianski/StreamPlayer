@@ -38,9 +38,11 @@ import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.cache.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import java.io.File
+import kotlinx.coroutines.flow.collect
 
 class PlayerService() : Service() {
     private val NOTIFICATION_ID = 404
@@ -173,11 +175,19 @@ class PlayerService() : Service() {
                     startService(Intent(applicationContext, PlayerService::class.java))
                     CoroutineScope(Dispatchers.IO).launch {
                         if (musicRepository != null) {
-                            track = musicRepository.getCurrent()
+        //                    track = musicRepository.getCurrent()
+
+                        musicRepository.getCurrent().collect {track ->
+                             updateMetadataFromTrack(track)
+                         }
+
+
+
+
                         }
 
                         Log.d("MyLog", "Track in servise: $track")
-                        updateMetadataFromTrack(track)
+  //                      updateMetadataFromTrack(track)
                         CoroutineScope(Dispatchers.Main).launch {
                             prepareToPlay(Uri.parse(track.previewURL))
                         }
@@ -261,10 +271,15 @@ class PlayerService() : Service() {
             override fun onSkipToNext() {
                  CoroutineScope(Dispatchers.IO).launch {
                      if (musicRepository != null) {
-                         track = musicRepository.getNext()
+
+                         musicRepository.getNext().collect {track ->
+                             updateMetadataFromTrack(track)
+                         }
+
+  //                       track = musicRepository.getNext()
                      }
 
-                    updateMetadataFromTrack(track)
+ //                   updateMetadataFromTrack(track)
 
                     refreshNotificationAndForegroundStatus(currentState)
                     CoroutineScope(Dispatchers.Main).launch {
@@ -276,10 +291,14 @@ class PlayerService() : Service() {
             override fun onSkipToPrevious() {
                  CoroutineScope(Dispatchers.IO).launch {
                      if (musicRepository != null) {
-                         track = musicRepository.getPrevious()
+
+                         musicRepository.getPrevious().collect{
+                             updateMetadataFromTrack(track)
+                         }
+ //                        track = musicRepository.getPrevious()
                      }
 
-                    updateMetadataFromTrack(track)
+ //                   updateMetadataFromTrack(track)
                     refreshNotificationAndForegroundStatus(currentState)
                     CoroutineScope(Dispatchers.Main).launch {
                         prepareToPlay(Uri.parse(track.previewURL))
@@ -485,6 +504,8 @@ class PlayerService() : Service() {
 
 }
 
+
+
 fun imageToBitmap(artistImageUri: String, context: Context): Bitmap? {
     var bitmap: Bitmap? = null
     CoroutineScope(Dispatchers.IO).launch {
@@ -499,5 +520,8 @@ fun imageToBitmap(artistImageUri: String, context: Context): Bitmap? {
     }
     return bitmap
 
-}
 
+}
+fun getTrack(tracks: Tracks): Tracks{
+    return tracks
+}

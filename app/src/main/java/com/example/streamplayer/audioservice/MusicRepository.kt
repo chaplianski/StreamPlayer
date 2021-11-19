@@ -9,8 +9,9 @@ import com.example.streamplayer.service.ArtistImageApiService
 import com.example.streamplayer.service.TopListApiService
 import com.example.streamplayer.viewmodel.PositionViewModel
 import com.example.streamplayer.viewmodel.SongViewModel
-
-
+import com.google.android.exoplayer2.extractor.mp4.Track
+import kotlinx.coroutines.CoroutineScope
+import java.util.concurrent.Flow
 
 
 class MusicRepository(val context: Context) {
@@ -116,27 +117,33 @@ class MusicRepository(val context: Context) {
 
     var currentItemIndex = PositionViewModel.getPosition()+1
 
+
+
     val maxIndex = 20
 
-    suspend fun getNext(): Tracks {
+    suspend fun getNext(): kotlinx.coroutines.flow.Flow<Tracks> {
      Log.d("MyLog", "Position next in Repository: $currentItemIndex")
         if (currentItemIndex == maxIndex) currentItemIndex = 1 else currentItemIndex++
         return getCurrent()
     }
 
-    suspend fun getPrevious(): Tracks {
+    suspend fun getPrevious(): kotlinx.coroutines.flow.Flow<Tracks> {
         Log.d("MyLog", "Position back in Repository: $currentItemIndex")
         if (currentItemIndex == 1) currentItemIndex = maxIndex else currentItemIndex--
         return getCurrent()
     }
-
+/*
     suspend fun getCurrent(): Tracks {
         val trackDatabase = TrackDatabase.getDatabase(context)
         val list = trackDatabase.TrackDao().getTrackWithChatNumber(currentItemIndex)
         Log.d("MyLog", "Track from repository: $list")
         return list
         //return trackList[currentItemIndex]
-    }
+    }*/
+    suspend fun getCurrent() = TrackDatabase.getDatabase(context).TrackDao().getTrackWithChatNumber(currentItemIndex)
+
+
+
 
 }
 
