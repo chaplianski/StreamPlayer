@@ -18,6 +18,7 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
+import androidx.annotation.RestrictTo
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -62,6 +63,7 @@ class PlayerService() : Service() {
     private var extractorsFactory: ExtractorsFactory? = null
     private var dataSourceFactory: DataSource.Factory? = null
     val musicRepository = RepositoryInstance.getMusicRepository()
+
 
     override fun onCreate() {
         super.onCreate()
@@ -110,7 +112,6 @@ class PlayerService() : Service() {
         )
 
         exoPlayer = SimpleExoPlayer.Builder(this).build()
-
         exoPlayer!!.addListener(exoPlayerListener)
 
         //********** cash add *******************
@@ -149,48 +150,54 @@ class PlayerService() : Service() {
             private var currentUri: Uri? = null
             var currentState = PlaybackStateCompat.STATE_STOPPED
 
+
+
+
+
             override fun onPlay() {
+
                 if (!exoPlayer!!.playWhenReady) {
                     startService(Intent(applicationContext, PlayerService::class.java))
-                    CoroutineScope(Dispatchers.IO).launch {
-                        if (musicRepository != null) {
-                            musicRepository.getCurrent().collect { track ->
+                    if (musicRepository != null) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val track = getTrack()
+                            if (track != null) {
                                 updateMetadataFromTrack(track)
-                                prepareToPlay(Uri.parse(track.previewURL))
+                                prepareToPlay(Uri.parse(track?.previewURL))
                                 Log.d("MyLog", "Track in servise: $track")
-                            }
-
-
                         }
 
-
-                        //                      updateMetadataFromTrack(track)
-                        CoroutineScope(Dispatchers.Main).launch {
-                            //                           prepareToPlay(Uri.parse(track.previewURL))
                         }
                     }
-                    if (!audioFocusRequested) {
-                        audioFocusRequested = true
-                        val audioFocusResult: Int
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            audioFocusResult =
-                                audioManager!!.requestAudioFocus((audioFocusRequest)!!)
-                        } else {
-                            audioFocusResult = audioManager!!.requestAudioFocus(
-                                audioFocusChangeListener,
-                                AudioManager.STREAM_MUSIC,
-                                AudioManager.AUDIOFOCUS_GAIN
-                            )
-                        }
-                        if (audioFocusResult != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) return
-                    }
-                    mediaSession!!.isActive = true // Сразу после получения фокуса
-                    registerReceiver(
-                        becomingNoisyReceiver,
-                        IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-                    )
-                    exoPlayer!!.playWhenReady = true
+
                 }
+
+
+                //                      updateMetadataFromTrack(track)
+
+
+                if (!audioFocusRequested) {
+                    audioFocusRequested = true
+                    val audioFocusResult: Int
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        audioFocusResult =
+                            audioManager!!.requestAudioFocus((audioFocusRequest)!!)
+                    } else {
+                        audioFocusResult = audioManager!!.requestAudioFocus(
+                            audioFocusChangeListener,
+                            AudioManager.STREAM_MUSIC,
+                            AudioManager.AUDIOFOCUS_GAIN
+                        )
+                    }
+                    if (audioFocusResult != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) return
+                }
+                mediaSession!!.isActive = true // Сразу после получения фокуса
+                registerReceiver(
+                    becomingNoisyReceiver,
+                    IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+                )
+                exoPlayer!!.playWhenReady = true
+
                 mediaSession!!.setPlaybackState(
                     stateBuilder.setState(
                         PlaybackStateCompat.STATE_PLAYING,
@@ -246,46 +253,55 @@ class PlayerService() : Service() {
             }
 
             override fun onSkipToNext() {
-                CoroutineScope(Dispatchers.IO).launch {
-                    if (musicRepository != null) {
-
-                        musicRepository.getNext().collect { track ->
+                if (musicRepository != null) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val track = getTrack()
+                        if (track != null) {
                             updateMetadataFromTrack(track)
-                            refreshNotificationAndForegroundStatus(currentState)
-                            prepareToPlay(Uri.parse(track.previewURL))
                         }
+                        refreshNotificationAndForegroundStatus(currentState)
+                        prepareToPlay(Uri.parse(track?.previewURL))
 
-                        //                       track = musicRepository.getNext()
+
                     }
 
-                    //                   updateMetadataFromTrack(track)
 
-                    //                   refreshNotificationAndForegroundStatus(currentState)
-                    CoroutineScope(Dispatchers.Main).launch {
-                        //                       prepareToPlay(Uri.parse(track.previewURL))
-                    }
+
+                    //                       track = musicRepository.getNext()
                 }
+
+                //                   updateMetadataFromTrack(track)
+
+                //                   refreshNotificationAndForegroundStatus(currentState)
+                CoroutineScope(Dispatchers.Main).launch {
+                    //                       prepareToPlay(Uri.parse(track.previewURL))
+                }
+
             }
 
             override fun onSkipToPrevious() {
-                CoroutineScope(Dispatchers.IO).launch {
-                    if (musicRepository != null) {
 
-                        musicRepository.getPrevious().collect { track ->
+                if (musicRepository != null) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val track = getTrack()
+                        if (track != null) {
                             updateMetadataFromTrack(track)
-                            refreshNotificationAndForegroundStatus(currentState)
-                            prepareToPlay(Uri.parse(track.previewURL))
                         }
-                        //                        track = musicRepository.getPrevious()
+                        refreshNotificationAndForegroundStatus(currentState)
+                        prepareToPlay(Uri.parse(track?.previewURL))
                     }
 
-                    //                   updateMetadataFromTrack(track)
-                    //                   refreshNotificationAndForegroundStatus(currentState)
-                    CoroutineScope(Dispatchers.Main).launch {
-                        //                       prepareToPlay(Uri.parse(track.previewURL))
-                    }
                 }
+                //                        track = musicRepository.getPrevious()
+
+
+                //                   updateMetadataFromTrack(track)
+                //                   refreshNotificationAndForegroundStatus(currentState)
+
+                    //                       prepareToPlay(Uri.parse(track.previewURL))
+
             }
+
 
             private fun prepareToPlay(uri: Uri) {
                 if (uri != currentUri) {
@@ -302,29 +318,29 @@ class PlayerService() : Service() {
                     }
                 }
             }
+        }
 
-            private suspend fun updateMetadataFromTrack(track: Tracks) {
+    private fun updateMetadataFromTrack(track: Tracks) {
 
-                CoroutineScope(Dispatchers.Main).launch {
-                    metadataBuilder.putBitmap(
-                        MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
-                        track.artistImageUri?.let { imageToBitmap(it, this@PlayerService) }
-                    )
-                }
-                //   Log.d("MyLog", "name: ${track.name}, album: ${track.albumName}, artistName: ${track.artistName}")
-                //              metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, track.name)
-                metadataBuilder.putString(
-                    MediaMetadataCompat.METADATA_KEY_TITLE,
-                    track.name + "  (album: " + track.albumName + ")"
-                )
-                //        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, track.albumName)
+        CoroutineScope(Dispatchers.Main).launch {
+            metadataBuilder.putBitmap(
+                MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
+                track.artistImageUri?.let { imageToBitmap(it, this@PlayerService) }
+            )
+        }
+        //   Log.d("MyLog", "name: ${track.name}, album: ${track.albumName}, artistName: ${track.artistName}")
+        //              metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, track.name)
+        metadataBuilder.putString(
+            MediaMetadataCompat.METADATA_KEY_TITLE,
+            track.name + "  (album: " + track.albumName + ")"
+        )
+        //        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, track.albumName)
 //                metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, track.artistName)
 //                metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_DURATION, "30")
-                mediaSession?.setMetadata(metadataBuilder.build())
-            }
+        mediaSession?.setMetadata(metadataBuilder.build())
+    }
 
 
-        }
     private val audioFocusChangeListener: OnAudioFocusChangeListener =
         OnAudioFocusChangeListener { focusChange ->
             when (focusChange) {
@@ -485,8 +501,17 @@ class PlayerService() : Service() {
         }
     }
 
+    suspend fun getTrack(): Tracks? {
+        var track: Tracks? = null
+        musicRepository?.positionFlow?.collect {
+            track = it
+        }
+        return track
 
+    }
 }
+
+
 
 
 fun imageToBitmap(artistImageUri: String, context: Context): Bitmap? {
@@ -503,9 +528,6 @@ fun imageToBitmap(artistImageUri: String, context: Context): Bitmap? {
     }
     return bitmap
 
-
 }
 
-fun getTrack(tracks: Tracks): Tracks {
-    return tracks
-}
+

@@ -13,6 +13,8 @@ import com.example.streamplayer.viewmodel.SongViewModel
 import com.google.android.exoplayer2.extractor.mp4.Track
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import java.util.concurrent.Flow
@@ -103,21 +105,26 @@ class MusicRepository(val context: Context) {
     val maxIndex = 19
 
 
-    suspend fun getNext(): kotlinx.coroutines.flow.Flow<Tracks> {
+    suspend fun getNext() {
 
         if (currentItemIndex == maxIndex) currentItemIndex = 1 else currentItemIndex++
         Log.d("MyLog", "Position next in Repository: $currentItemIndex")
-        return getCurrent()
+        getCurrent()
     }
 
-    suspend fun getPrevious(): kotlinx.coroutines.flow.Flow<Tracks> {
+    suspend fun getPrevious() {
 
         if (currentItemIndex == 1) currentItemIndex = maxIndex else currentItemIndex--
         Log.d("MyLog", "Position back in Repository: $currentItemIndex")
-        return getCurrent()
+        getCurrent()
     }
 
-    suspend fun getCurrent() = TrackDatabase.getDatabase(context).TrackDao().getTrackWithChatNumber(currentItemIndex)
+    val positionFlow: MutableStateFlow<Tracks?> = MutableStateFlow(null)
+    suspend fun getCurrent() {
+        val tracks = TrackDatabase.getDatabase(context).TrackDao().getTrackWithChatNumber(currentItemIndex)
+        Log.d("MyLog", "tracks in Repository: $tracks")
+        positionFlow.emit(tracks)
+    }
 }
 
 

@@ -24,8 +24,8 @@ interface TrackDao {
     fun deleteAll ()
 
     @androidx.room.Query("SELECT * FROM track_table WHERE artistChatNumber LIKE :artistChatNumber")
- //   fun getTrackWithChatNumber(artistChatNumber: Int): Tracks
-    fun getTrackWithChatNumber(artistChatNumber: Int): Flow<Tracks>
+    fun getTrackWithChatNumber(artistChatNumber: Int): Tracks
+ //   fun getTrackWithChatNumber(artistChatNumber: Int): Flow<Tracks>
 
  //   @androidx.room.Query("SELECT COUNT(*) FROM track_table")
  //   suspend fun getTracksCount(): Int

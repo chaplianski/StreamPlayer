@@ -61,7 +61,9 @@ class SongItemFragment : Fragment() {
         songItemViewModel.trackLiveData.observe(this.viewLifecycleOwner, {
          //   track = it
             Log.d("MyLog", "track in songItemFragment: $it")
-            fetchItemView(it)
+            if (it != null) {
+                fetchItemView(it)
+            }
 
         })
 //**************** Это я пробовал через наблюдение запотоком из репозитория   ***************
@@ -198,12 +200,12 @@ class SongItemFragment : Fragment() {
         binding.btBack.setOnClickListener(View.OnClickListener {
             if (mediaController != null)
                 mediaController!!.transportControls.skipToPrevious()
-            viewLifecycleOwner.lifecycleScope.launch {
+  /*          viewLifecycleOwner.lifecycleScope.launch {
                repository?.getCurrent()?.collect{ track ->
                     track?.let { it1 -> fetchItemView(it1) }
                     Log.d("MyLog", "track back in songItemFragment: $track")
                 }
-            }
+            }*/
         })
 
         binding.btToHightLevel.setOnClickListener {
