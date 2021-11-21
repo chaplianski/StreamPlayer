@@ -2,6 +2,7 @@ package com.example.streamplayer.audioservice
 
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.flowWithLifecycle
 import com.example.streamplayer.db.TrackDatabase
 import com.example.streamplayer.model.ImagesItem
 import com.example.streamplayer.model.Tracks
@@ -11,20 +12,15 @@ import com.example.streamplayer.viewmodel.PositionViewModel
 import com.example.streamplayer.viewmodel.SongViewModel
 import com.google.android.exoplayer2.extractor.mp4.Track
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.launch
 import java.util.concurrent.Flow
 
 
 class MusicRepository(val context: Context) {
 
- //   private val _trackListLiveData: MutableLiveData<List<Tracks>> = MutableLiveData()
-//    val trackListLiveData: LiveData<List<Tracks>>
- //       get() = _trackListLiveData
-    var tracks = mutableListOf<Tracks>()
-
-
-//    val trackListLiveData: LiveData<List<Tracks>> = fetch()
-
-
+     var tracks = mutableListOf<Tracks>()
 
     suspend fun fetch(): MutableList <Tracks> {
 
@@ -52,23 +48,16 @@ class MusicRepository(val context: Context) {
                     Log.d(SongViewModel.MY_LOG, "$artistImage")
                     resp[i].artistImageUri = artistImage
                     resp[i].artistChatNumber = i+1
-    //                Log.d(SongViewModel.MY_LOG, "Resp: ${resp[i]}")
                     tracks.add(resp[i])
-         //           val trackDatabase = TrackDatabase.getDatabase(context)
-         //           trackDatabase.TrackDao().insertTrack(resp[i])
-
-    //                Log.d(SongViewModel.MY_LOG, "track: ${tracks}")
                 }
-    //            Log.d(SongViewModel.MY_LOG, "2track: ${tracks}")
                 val trackDatabase = TrackDatabase.getDatabase(context)
                 trackDatabase.TrackDao().deleteAll()
                 tracks.forEachIndexed {i, value -> trackDatabase.TrackDao().insertTrack(tracks[i])}
                 return tracks
 
             }
-            //    _trackListLiveData.postValue(tracks)
 
-            return tracks //_trackListLiveData
+            return tracks
     }
 
     private suspend fun fetchArtistImg(artistId: String): String {
@@ -92,19 +81,6 @@ class MusicRepository(val context: Context) {
 
  //**************************************
 
-
-
-
- //   val trackList = tracks as List<Tracks>
-//    val trackList = getNewTrackList()
-
-/*
-    private fun getNewTrackList(): List<Tracks> {
-           val trackDatabase = TrackDatabase.getDatabase(context)
-           val list = trackDatabase.TrackDao().getAll()
-            Log.d("MyLog", "list: $list")
-        return list
-    }*/
     suspend fun getTrackList(): List<Tracks> {
            val trackDatabase = TrackDatabase.getDatabase(context)
            val list = trackDatabase.TrackDao().getAll()
@@ -112,39 +88,41 @@ class MusicRepository(val context: Context) {
         return list
     }
 
-//***********************************
+//*********************************** Координация с навигацией плеера *********
 
+ //   var currentItemIndex = PositionViewModel.getPosition()+1
 
-    var currentItemIndex = PositionViewModel.getPosition()+1
+    var currentItemIndex = 1
 
+    fun getTrackPosition(position: Int): Int {
+        Log.d("MyLog", "Position in Repository: $position")
+        currentItemIndex = position+1
+        return position
+    }
 
+    val maxIndex = 19
 
-    val maxIndex = 20
 
     suspend fun getNext(): kotlinx.coroutines.flow.Flow<Tracks> {
-     Log.d("MyLog", "Position next in Repository: $currentItemIndex")
+
         if (currentItemIndex == maxIndex) currentItemIndex = 1 else currentItemIndex++
+        Log.d("MyLog", "Position next in Repository: $currentItemIndex")
         return getCurrent()
     }
 
     suspend fun getPrevious(): kotlinx.coroutines.flow.Flow<Tracks> {
-        Log.d("MyLog", "Position back in Repository: $currentItemIndex")
+
         if (currentItemIndex == 1) currentItemIndex = maxIndex else currentItemIndex--
+        Log.d("MyLog", "Position back in Repository: $currentItemIndex")
         return getCurrent()
     }
-/*
-    suspend fun getCurrent(): Tracks {
-        val trackDatabase = TrackDatabase.getDatabase(context)
-        val list = trackDatabase.TrackDao().getTrackWithChatNumber(currentItemIndex)
-        Log.d("MyLog", "Track from repository: $list")
-        return list
-        //return trackList[currentItemIndex]
-    }*/
+
     suspend fun getCurrent() = TrackDatabase.getDatabase(context).TrackDao().getTrackWithChatNumber(currentItemIndex)
-
-
-
-
 }
+
+
+
+
+
 
 

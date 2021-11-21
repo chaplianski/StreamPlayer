@@ -23,7 +23,7 @@ class SongViewModel(application: Application) : AndroidViewModel(application) {
         //    val repository = MusicRepository(getApplication())
             val repository = RepositoryInstance.getMusicRepository()
             trackListLiveData.postValue(repository?.fetch())
-            Log.d("MyLog", "ViewModel: ${trackListLiveData.toString()}")
+   //         Log.d("MyLog", "ViewModel: ${trackListLiveData.toString()}")
         }
     }
 

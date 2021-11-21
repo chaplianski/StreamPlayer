@@ -1,12 +1,13 @@
 package com.example.streamplayer.db
 
-import androidx.room.*
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import com.example.streamplayer.model.Tracks
-import com.google.android.exoplayer2.extractor.mp4.Track
 import kotlinx.coroutines.flow.Flow
-import retrofit2.http.DELETE
-import retrofit2.http.GET
 import retrofit2.http.Query
+
 
 @Dao
 interface TrackDao {
@@ -25,6 +26,9 @@ interface TrackDao {
     @androidx.room.Query("SELECT * FROM track_table WHERE artistChatNumber LIKE :artistChatNumber")
  //   fun getTrackWithChatNumber(artistChatNumber: Int): Tracks
     fun getTrackWithChatNumber(artistChatNumber: Int): Flow<Tracks>
+
+ //   @androidx.room.Query("SELECT COUNT(*) FROM track_table")
+ //   suspend fun getTracksCount(): Int
 
  //   @androidx.room.Query("SELECT track FROM track_table")
  //   fun getTrack(): Tracks

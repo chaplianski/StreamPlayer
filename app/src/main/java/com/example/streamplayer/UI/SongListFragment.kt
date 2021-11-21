@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.streamplayer.R
+import com.example.streamplayer.RepositoryInstance
 import com.example.streamplayer.adapters.TrackListAdapter
 import com.example.streamplayer.model.Tracks
 import com.example.streamplayer.viewmodel.ListViewModelFactury
@@ -36,6 +37,10 @@ class SongListFragment : Fragment()  {
     var tracks = mutableListOf<Tracks>()
       val positionViewModel: PositionViewModel by activityViewModels()
       val viewModel: SongViewModel by viewModels { ListViewModelFactury(requireActivity().application) }
+        val repository = RepositoryInstance.getMusicRepository()
+
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,8 +59,8 @@ class SongListFragment : Fragment()  {
             override fun onChangePosition(position: Int) {
                 Log.d("MyLog","Position in ListFragment: $position ")
 
-                positionViewModel.getTrackPosition(position)
-
+            //    positionViewModel.getTrackPosition(position)
+                repository?.getTrackPosition(position)
             }
 
         })

@@ -14,9 +14,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
@@ -29,36 +29,23 @@ import com.example.streamplayer.model.Tracks
 import com.example.streamplayer.viewmodel.SongItemViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import okhttp3.internal.notifyAll
 
 class SongItemFragment : Fragment() {
     lateinit var binding: FragmentSongItemBinding
-    var positionFromList = 0
-
-    //   private val listSongViewModel: SongViewModel by activityViewModels()
-//    private val songItemViewModel: SongItemViewModel by activityViewModels()
+    private val songItemViewModel: SongItemViewModel by viewModels()
     //{ListViewModelFactury(requireActivity().application)}
     var trackList = emptyList<Tracks>()
- //   lateinit var track: Tracks
-
-
-
- //   val songItemViewModel: SongItemViewModel by viewModels()
-
-//    val songItemViewModel: SongItemViewModel by activityViewModels()
     private var playerServiceBinder: PlayerService.PlayerServiceBinder? = null
     private var playerService: PlayerService? = null
     private var mediaController: MediaControllerCompat? = null
-
-    //    private var callback: MediaControllerCompat.Callback? = null
+    val repository = RepositoryInstance.getMusicRepository()
     private var serviceConnection: ServiceConnection? = null
-
-    // val musicRepository = activity?.let { MusicRepository(it) }
-    val musicRepository = RepositoryInstance.getMusicRepository()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,52 +55,43 @@ class SongItemFragment : Fragment() {
         return binding.root
     }
 
-
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-    /*    songItemViewModel.trackLiveData.observe(this.viewLifecycleOwner, {
-            track = it
-            Log.d("MyLog", "track in songItemFragment: $track")
+        songItemViewModel.trackLiveData.observe(this.viewLifecycleOwner, {
+         //   track = it
+            Log.d("MyLog", "track in songItemFragment: $it")
             fetchItemView(it)
 
         })
-*/
-        val repository = RepositoryInstance.getMusicRepository()
-        viewLifecycleOwner.lifecycleScope.launch {
+//**************** Это я пробовал через наблюдение запотоком из репозитория   ***************
+      //  var track: Tracks? = null
+
+ /*       viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
-                  repository?.getCurrent().collect{
-                        fetchItemView(it)
-                  }
+                    repository?.getCurrent()?.collect{ track ->
+                            track?.let { it1 -> fetchItemView(it1) }
+                            Log.d("MyLog", "track in songItemFragment: $track")
+                    }
 
 
             }
         }
-
-
-     /*
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                track = flow {
-
+*/
+ /*       viewLifecycleOwner.lifecycleScope.launch {
+        repository?.getCurrent()
+            ?.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            ?.collect(){ track ->
+                track?.let { it1 -> fetchItemView(it1)
                 }
-                fetchItemView(it)
+                Log.d("MyLog", "track in songItemFragment: $track")
             }
-        }*/
-
-/*
-        songItemViewModel.trackItemLiveData.observe(this.viewLifecycleOwner, {
-            trackList = it
-            fetchView(positionFromList)
-            Log.d("MyLog", "tracks: $it")
-        })
-
+    }
 */
 
-        var statusButtom = "play"
 
+
+        var statusButtom = "play"
         var callback = object : MediaControllerCompat.Callback() {
             override fun onPlaybackStateChanged(state: PlaybackStateCompat) {
                 val playing = state.state == PlaybackStateCompat.STATE_PLAYING
@@ -121,7 +99,6 @@ class SongItemFragment : Fragment() {
                 when (state.state) {
                     1 -> {
                         binding.btStop.setEnabled(!playing)
-                    //    binding.btStop.setEnabled(stoping)
                         binding.btPlayPause.setImageResource(R.drawable.baseline_play_24)
                         statusButtom = "pause"
                     }
@@ -206,13 +183,27 @@ class SongItemFragment : Fragment() {
 
             if (mediaController != null)
                 mediaController!!.transportControls.skipToNext()
-
+/*********************  Если это добавить, то треки листаются. но нет синхронизации - отстает на 1 позицию  ***************
+            viewLifecycleOwner.lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED){
+                    repository?.getCurrent()?.collect{ track ->
+                        track?.let { it1 -> fetchItemView(it1) }
+                        Log.d("MyLog", "track next in songItemFragment: $track")
+                    }
+               }
+            }
+*/
         })
 
         binding.btBack.setOnClickListener(View.OnClickListener {
-
             if (mediaController != null)
                 mediaController!!.transportControls.skipToPrevious()
+            viewLifecycleOwner.lifecycleScope.launch {
+               repository?.getCurrent()?.collect{ track ->
+                    track?.let { it1 -> fetchItemView(it1) }
+                    Log.d("MyLog", "track back in songItemFragment: $track")
+                }
+            }
         })
 
         binding.btToHightLevel.setOnClickListener {
@@ -249,7 +240,7 @@ class SongItemFragment : Fragment() {
             //        .placeholder(R.drawable.ic_avatar_dog)
             .into(binding.imageView)
     }
-/*
+/******************** Вариант с запросом при наличии номера позиции ***************************
     fun fetchView(positionFromList: Int) {
         if (trackList.size > positionFromList) {
             binding.tvArtistName.text = trackList.get(positionFromList).artistName

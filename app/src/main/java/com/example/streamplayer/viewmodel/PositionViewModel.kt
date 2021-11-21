@@ -23,6 +23,7 @@ class PositionViewModel(application: Application) : AndroidViewModel(application
 
         var pos = 0
         fun getPosition(): Int {
+            Log.d("MyLog", "Pos in PositionViewModel: $pos")
             return pos
         }
     }

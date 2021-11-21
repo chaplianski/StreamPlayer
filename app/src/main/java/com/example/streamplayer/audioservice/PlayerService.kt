@@ -23,7 +23,6 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.media.session.MediaButtonReceiver
 import com.bumptech.glide.Glide
-import com.example.streamplayer.MainActivity
 import com.example.streamplayer.RepositoryInstance
 import com.example.streamplayer.UI.SongItemFragment
 import com.example.streamplayer.model.Tracks
@@ -38,11 +37,10 @@ import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.cache.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import java.io.File
-import kotlinx.coroutines.flow.collect
 
 class PlayerService() : Service() {
     private val NOTIFICATION_ID = 404
@@ -63,20 +61,10 @@ class PlayerService() : Service() {
     private var exoPlayer: SimpleExoPlayer? = null
     private var extractorsFactory: ExtractorsFactory? = null
     private var dataSourceFactory: DataSource.Factory? = null
-
-
- //   private val musicRepository = songItemViewModel.repository//MusicRepository(this)
-
- //   val songItemViewModel = SongItemViewModel(application)
- //   val musicRepository = RepositoryInstance.getMusicRepository()
-//    val appContext = applicationContext
     val musicRepository = RepositoryInstance.getMusicRepository()
-    lateinit var track: Tracks
 
     override fun onCreate() {
         super.onCreate()
-
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
@@ -121,14 +109,6 @@ class PlayerService() : Service() {
             )
         )
 
-        /*   exoPlayer = ExoPlayerFactory.newSimpleInstance(
-               this,
-               DefaultRenderersFactory(this),
-               DefaultTrackSelector(),
-               DefaultLoadControl()
-           )*/
-
-
         exoPlayer = SimpleExoPlayer.Builder(this).build()
 
         exoPlayer!!.addListener(exoPlayerListener)
@@ -136,7 +116,6 @@ class PlayerService() : Service() {
         //********** cash add *******************
         val httpDataSourceFactory: DataSource.Factory = OkHttpDataSource.Factory(
             OkHttpClient()
-            //  Util.getUserAgent(this, getString(R.string.app_name))
         )
 
         val cache: Cache = SimpleCache(
@@ -175,23 +154,21 @@ class PlayerService() : Service() {
                     startService(Intent(applicationContext, PlayerService::class.java))
                     CoroutineScope(Dispatchers.IO).launch {
                         if (musicRepository != null) {
-        //                    track = musicRepository.getCurrent()
-
-                        musicRepository.getCurrent().collect {track ->
-                             updateMetadataFromTrack(track)
-                         }
-
-
+                            musicRepository.getCurrent().collect { track ->
+                                updateMetadataFromTrack(track)
+                                prepareToPlay(Uri.parse(track.previewURL))
+                                Log.d("MyLog", "Track in servise: $track")
+                            }
 
 
                         }
 
-                        Log.d("MyLog", "Track in servise: $track")
-  //                      updateMetadataFromTrack(track)
+
+                        //                      updateMetadataFromTrack(track)
                         CoroutineScope(Dispatchers.Main).launch {
-                            prepareToPlay(Uri.parse(track.previewURL))
+                            //                           prepareToPlay(Uri.parse(track.previewURL))
                         }
-                      }
+                    }
                     if (!audioFocusRequested) {
                         audioFocusRequested = true
                         val audioFocusResult: Int
@@ -269,39 +246,43 @@ class PlayerService() : Service() {
             }
 
             override fun onSkipToNext() {
-                 CoroutineScope(Dispatchers.IO).launch {
-                     if (musicRepository != null) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    if (musicRepository != null) {
 
-                         musicRepository.getNext().collect {track ->
-                             updateMetadataFromTrack(track)
-                         }
+                        musicRepository.getNext().collect { track ->
+                            updateMetadataFromTrack(track)
+                            refreshNotificationAndForegroundStatus(currentState)
+                            prepareToPlay(Uri.parse(track.previewURL))
+                        }
 
-  //                       track = musicRepository.getNext()
-                     }
+                        //                       track = musicRepository.getNext()
+                    }
 
- //                   updateMetadataFromTrack(track)
+                    //                   updateMetadataFromTrack(track)
 
-                    refreshNotificationAndForegroundStatus(currentState)
+                    //                   refreshNotificationAndForegroundStatus(currentState)
                     CoroutineScope(Dispatchers.Main).launch {
-                        prepareToPlay(Uri.parse(track.previewURL))
+                        //                       prepareToPlay(Uri.parse(track.previewURL))
                     }
                 }
             }
 
             override fun onSkipToPrevious() {
-                 CoroutineScope(Dispatchers.IO).launch {
-                     if (musicRepository != null) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    if (musicRepository != null) {
 
-                         musicRepository.getPrevious().collect{
-                             updateMetadataFromTrack(track)
-                         }
- //                        track = musicRepository.getPrevious()
-                     }
+                        musicRepository.getPrevious().collect { track ->
+                            updateMetadataFromTrack(track)
+                            refreshNotificationAndForegroundStatus(currentState)
+                            prepareToPlay(Uri.parse(track.previewURL))
+                        }
+                        //                        track = musicRepository.getPrevious()
+                    }
 
- //                   updateMetadataFromTrack(track)
-                    refreshNotificationAndForegroundStatus(currentState)
+                    //                   updateMetadataFromTrack(track)
+                    //                   refreshNotificationAndForegroundStatus(currentState)
                     CoroutineScope(Dispatchers.Main).launch {
-                        prepareToPlay(Uri.parse(track.previewURL))
+                        //                       prepareToPlay(Uri.parse(track.previewURL))
                     }
                 }
             }
@@ -326,17 +307,17 @@ class PlayerService() : Service() {
 
                 CoroutineScope(Dispatchers.Main).launch {
                     metadataBuilder.putBitmap(
-                       MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
+                        MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
                         track.artistImageUri?.let { imageToBitmap(it, this@PlayerService) }
                     )
                 }
-          //   Log.d("MyLog", "name: ${track.name}, album: ${track.albumName}, artistName: ${track.artistName}")
-         //              metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, track.name)
+                //   Log.d("MyLog", "name: ${track.name}, album: ${track.albumName}, artistName: ${track.artistName}")
+                //              metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, track.name)
                 metadataBuilder.putString(
                     MediaMetadataCompat.METADATA_KEY_TITLE,
                     track.name + "  (album: " + track.albumName + ")"
                 )
-        //        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, track.albumName)
+                //        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, track.albumName)
 //                metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, track.artistName)
 //                metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_DURATION, "30")
                 mediaSession?.setMetadata(metadataBuilder.build())
@@ -361,7 +342,10 @@ class PlayerService() : Service() {
         }
     }
     private val exoPlayerListener: Player.EventListener = object : Player.EventListener {
-        override fun onTracksChanged(trackGroups: TrackGroupArray, trackSelections: TrackSelectionArray){
+        override fun onTracksChanged(
+            trackGroups: TrackGroupArray,
+            trackSelections: TrackSelectionArray
+        ) {
         }
 
         override fun onLoadingChanged(isLoading: Boolean) {
@@ -505,7 +489,6 @@ class PlayerService() : Service() {
 }
 
 
-
 fun imageToBitmap(artistImageUri: String, context: Context): Bitmap? {
     var bitmap: Bitmap? = null
     CoroutineScope(Dispatchers.IO).launch {
@@ -513,7 +496,7 @@ fun imageToBitmap(artistImageUri: String, context: Context): Bitmap? {
             Glide.with(context)
                 .asBitmap()
                 .load(artistImageUri)
-     //           .override(356, 237)
+                //           .override(356, 237)
                 .into(50, 50)
                 .get()
 
@@ -522,6 +505,7 @@ fun imageToBitmap(artistImageUri: String, context: Context): Bitmap? {
 
 
 }
-fun getTrack(tracks: Tracks): Tracks{
+
+fun getTrack(tracks: Tracks): Tracks {
     return tracks
 }

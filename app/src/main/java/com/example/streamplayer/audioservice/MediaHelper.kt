@@ -12,14 +12,14 @@ class MediaHelper {
         fun helpFrom (context: Context?, mediaSession: MediaSessionCompat): NotificationCompat.Builder? {
             val controller = mediaSession.controller
             val mediaMetadata = controller.metadata
-//            val description = mediaMetadata.description
+  //          val description = mediaMetadata.description
             val builder = NotificationCompat.Builder(
                 context!!
             )
             builder
 //                .setContentTitle(description.title)
 //                .setContentText(description.subtitle)
-//                .setSubText(description.description)
+ //               .setSubText(description.description)
 //                .setLargeIcon(description.iconBitmap)
                 .setContentIntent(controller.sessionActivity)
                 .setDeleteIntent(
