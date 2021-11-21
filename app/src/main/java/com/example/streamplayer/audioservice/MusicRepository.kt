@@ -123,7 +123,7 @@ class MusicRepository(val context: Context) {
     suspend fun getCurrent() {
         val tracks = TrackDatabase.getDatabase(context).TrackDao().getTrackWithChatNumber(currentItemIndex)
         Log.d("MyLog", "tracks in Repository: $tracks")
-        positionFlow.emit(tracks)
+        positionFlow.value = tracks
     }
 }
 
