@@ -59,39 +59,13 @@ class SongItemFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         songItemViewModel.trackLiveData.observe(this.viewLifecycleOwner, {
-         //   track = it
+            //   track = it
             Log.d("MyLog", "track in songItemFragment: $it")
             if (it != null) {
                 fetchItemView(it)
             }
 
         })
-//**************** Это я пробовал через наблюдение запотоком из репозитория   ***************
-      //  var track: Tracks? = null
-
- /*       viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                    repository?.getCurrent()?.collect{ track ->
-                            track?.let { it1 -> fetchItemView(it1) }
-                            Log.d("MyLog", "track in songItemFragment: $track")
-                    }
-
-
-            }
-        }
-*/
- /*       viewLifecycleOwner.lifecycleScope.launch {
-        repository?.getCurrent()
-            ?.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-            ?.collect(){ track ->
-                track?.let { it1 -> fetchItemView(it1)
-                }
-                Log.d("MyLog", "track in songItemFragment: $track")
-            }
-    }
-*/
-
-
 
         var statusButtom = "play"
         var callback = object : MediaControllerCompat.Callback() {
@@ -134,8 +108,8 @@ class SongItemFragment : Fragment() {
                     mediaController?.registerCallback(callback as MediaControllerCompat.Callback)
                     mediaController?.playbackState?.let {
                         callback.onPlaybackStateChanged(it)
- //                       (callback as MediaControllerCompat.Callback).onPlaybackStateChanged(
- //                           mediaController!!.playbackState)
+                        //                       (callback as MediaControllerCompat.Callback).onPlaybackStateChanged(
+                        //                           mediaController!!.playbackState)
                     }
                 } catch (e: RemoteException) {
                     mediaController = null
@@ -185,27 +159,27 @@ class SongItemFragment : Fragment() {
 
             if (mediaController != null)
                 mediaController!!.transportControls.skipToNext()
-/*********************  Если это добавить, то треки листаются. но нет синхронизации - отстает на 1 позицию  ***************
+            /*********************  Если это добавить, то треки листаются. но нет синхронизации - отстает на 1 позицию  ***************
             viewLifecycleOwner.lifecycleScope.launch {
-                repeatOnLifecycle(Lifecycle.State.STARTED){
-                    repository?.getCurrent()?.collect{ track ->
-                        track?.let { it1 -> fetchItemView(it1) }
-                        Log.d("MyLog", "track next in songItemFragment: $track")
-                    }
-               }
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+            repository?.getCurrent()?.collect{ track ->
+            track?.let { it1 -> fetchItemView(it1) }
+            Log.d("MyLog", "track next in songItemFragment: $track")
             }
-*/
+            }
+            }
+             */
         })
 
         binding.btBack.setOnClickListener(View.OnClickListener {
             if (mediaController != null)
                 mediaController!!.transportControls.skipToPrevious()
-  /*          viewLifecycleOwner.lifecycleScope.launch {
-               repository?.getCurrent()?.collect{ track ->
-                    track?.let { it1 -> fetchItemView(it1) }
-                    Log.d("MyLog", "track back in songItemFragment: $track")
-                }
-            }*/
+            /*          viewLifecycleOwner.lifecycleScope.launch {
+                         repository?.getCurrent()?.collect{ track ->
+                              track?.let { it1 -> fetchItemView(it1) }
+                              Log.d("MyLog", "track back in songItemFragment: $track")
+                          }
+                      }*/
         })
 
         binding.btToHightLevel.setOnClickListener {
@@ -242,24 +216,24 @@ class SongItemFragment : Fragment() {
             //        .placeholder(R.drawable.ic_avatar_dog)
             .into(binding.imageView)
     }
-/******************** Вариант с запросом при наличии номера позиции ***************************
+    /******************** Вариант с запросом при наличии номера позиции ***************************
     fun fetchView(positionFromList: Int) {
-        if (trackList.size > positionFromList) {
-            binding.tvArtistName.text = trackList.get(positionFromList).artistName
-            binding.tvAlbumName.text = trackList.get(positionFromList).albumName
-            binding.tvSongName.text = trackList.get(positionFromList).name
-            binding.tvChatNumber.text = "Number in chat # ${positionFromList + 1}"
+    if (trackList.size > positionFromList) {
+    binding.tvArtistName.text = trackList.get(positionFromList).artistName
+    binding.tvAlbumName.text = trackList.get(positionFromList).albumName
+    binding.tvSongName.text = trackList.get(positionFromList).name
+    binding.tvChatNumber.text = "Number in chat # ${positionFromList + 1}"
 
-            Glide.with(this).load(trackList.get(positionFromList).artistImageUri)
-                .error(R.drawable.ic_launcher_background)
-                .override(1800, 1800)
-                //.override(, Target.SIZE_ORIGINAL)
-                .centerCrop()
-                //        .placeholder(R.drawable.ic_avatar_dog)
-                .into(binding.imageView)
-        }
+    Glide.with(this).load(trackList.get(positionFromList).artistImageUri)
+    .error(R.drawable.ic_launcher_background)
+    .override(1800, 1800)
+    //.override(, Target.SIZE_ORIGINAL)
+    .centerCrop()
+    //        .placeholder(R.drawable.ic_avatar_dog)
+    .into(binding.imageView)
     }
-*/
+    }
+     */
 
 
 }

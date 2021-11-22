@@ -120,6 +120,13 @@ class MusicRepository(val context: Context) {
     }
 
     val positionFlow: MutableStateFlow<Tracks?> = MutableStateFlow(null)
+
+    suspend fun updateTrack (){
+        CoroutineScope(Dispatchers.IO).launch {
+            getCurrent()
+        }
+    }
+
     suspend fun getCurrent() {
         val tracks = TrackDatabase.getDatabase(context).TrackDao().getTrackWithChatNumber(currentItemIndex)
         Log.d("MyLog", "tracks in Repository: $tracks")

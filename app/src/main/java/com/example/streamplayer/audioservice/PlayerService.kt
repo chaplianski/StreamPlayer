@@ -130,6 +130,11 @@ class PlayerService() : Service() {
             CacheDataSource.FLAG_BLOCK_ON_CACHE or CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR
         )
         extractorsFactory = DefaultExtractorsFactory()
+        CoroutineScope(Dispatchers.IO).launch {
+            musicRepository?.positionFlow?.collect {
+                updateTrack(it)
+            }
+        }
     }
     // **********************************************
 
@@ -147,8 +152,8 @@ class PlayerService() : Service() {
 
     private val mediaSessionCallback: MediaSessionCompat.Callback =
         object : MediaSessionCompat.Callback() {
-            private var currentUri: Uri? = null
-            var currentState = PlaybackStateCompat.STATE_STOPPED
+
+
 
 
 
@@ -159,15 +164,9 @@ class PlayerService() : Service() {
                 if (!exoPlayer!!.playWhenReady) {
                     startService(Intent(applicationContext, PlayerService::class.java))
                     if (musicRepository != null) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val track = getTrack()
-                            if (track != null) {
-                                updateMetadataFromTrack(track)
-                                prepareToPlay(Uri.parse(track?.previewURL))
-                                Log.d("MyLog", "Track in servise: $track")
-                        }
 
-                        }
+
+
                     }
 
                 }
@@ -255,13 +254,7 @@ class PlayerService() : Service() {
             override fun onSkipToNext() {
                 if (musicRepository != null) {
                     CoroutineScope(Dispatchers.IO).launch {
-                        val track = getTrack()
-                        if (track != null) {
-                            updateMetadataFromTrack(track)
-                        }
-                        refreshNotificationAndForegroundStatus(currentState)
-                        prepareToPlay(Uri.parse(track?.previewURL))
-
+                        musicRepository.getNext()
 
                     }
 
@@ -283,12 +276,9 @@ class PlayerService() : Service() {
 
                 if (musicRepository != null) {
                     CoroutineScope(Dispatchers.IO).launch {
-                        val track = getTrack()
-                        if (track != null) {
-                            updateMetadataFromTrack(track)
-                        }
-                        refreshNotificationAndForegroundStatus(currentState)
-                        prepareToPlay(Uri.parse(track?.previewURL))
+                        musicRepository.getPrevious()
+
+
                     }
 
                 }
@@ -298,26 +288,12 @@ class PlayerService() : Service() {
                 //                   updateMetadataFromTrack(track)
                 //                   refreshNotificationAndForegroundStatus(currentState)
 
-                    //                       prepareToPlay(Uri.parse(track.previewURL))
+                //                       prepareToPlay(Uri.parse(track.previewURL))
 
             }
 
 
-            private fun prepareToPlay(uri: Uri) {
-                if (uri != currentUri) {
-                    currentUri = uri
-                    val mediaSource =
-                        dataSourceFactory?.let {
-                            ProgressiveMediaSource.Factory(it)
-                                .createMediaSource(currentUri!!)
-                        }
-                    if (mediaSource != null) {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            exoPlayer!!.prepare(mediaSource)
-                        }
-                    }
-                }
-            }
+
         }
 
     private fun updateMetadataFromTrack(track: Tracks) {
@@ -509,6 +485,35 @@ class PlayerService() : Service() {
         return track
 
     }
+    var currentState = PlaybackStateCompat.STATE_STOPPED
+    fun updateTrack (track: Tracks?){
+        track?.let {
+            updateMetadataFromTrack(it)
+            refreshNotificationAndForegroundStatus(currentState)
+            prepareToPlay(Uri.parse(track?.previewURL))
+        }
+        if (track != null) {
+            updateMetadataFromTrack(track)
+        }
+
+    }
+    private var currentUri: Uri? = null
+    private fun prepareToPlay(uri: Uri) {
+
+        if (uri != currentUri) {
+            currentUri = uri
+            val mediaSource =
+                dataSourceFactory?.let {
+                    ProgressiveMediaSource.Factory(it)
+                        .createMediaSource(currentUri!!)
+                }
+            if (mediaSource != null) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    exoPlayer!!.prepare(mediaSource)
+                }
+            }
+        }
+    }
 }
 
 
@@ -529,5 +534,6 @@ fun imageToBitmap(artistImageUri: String, context: Context): Bitmap? {
     return bitmap
 
 }
+
 
 
