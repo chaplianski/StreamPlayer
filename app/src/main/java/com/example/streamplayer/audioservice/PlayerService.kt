@@ -1,11 +1,15 @@
 package com.example.streamplayer.audioservice
 
+import android.R.attr
 import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
@@ -17,13 +21,17 @@ import android.os.IBinder
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.transition.Transition
 import android.util.Log
-import androidx.annotation.RestrictTo
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.media.session.MediaButtonReceiver
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.target.SimpleTarget
+import com.example.streamplayer.R
 import com.example.streamplayer.RepositoryInstance
 import com.example.streamplayer.UI.SongItemFragment
 import com.example.streamplayer.model.Tracks
@@ -42,6 +50,12 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import java.io.File
+import java.io.IOException
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.stream.Stream
+
 
 class PlayerService() : Service() {
     private val NOTIFICATION_ID = 404
@@ -133,6 +147,7 @@ class PlayerService() : Service() {
         CoroutineScope(Dispatchers.IO).launch {
             musicRepository?.positionFlow?.collect {
                 updateTrack(it)
+                Log.d("MyLog", "track to playerService from flow: $it")
             }
         }
     }
@@ -153,27 +168,11 @@ class PlayerService() : Service() {
     private val mediaSessionCallback: MediaSessionCompat.Callback =
         object : MediaSessionCompat.Callback() {
 
-
-
-
-
-
-
             override fun onPlay() {
 
                 if (!exoPlayer!!.playWhenReady) {
                     startService(Intent(applicationContext, PlayerService::class.java))
-                    if (musicRepository != null) {
-
-
-
-                    }
-
                 }
-
-
-                //                      updateMetadataFromTrack(track)
-
 
                 if (!audioFocusRequested) {
                     audioFocusRequested = true
@@ -257,62 +256,34 @@ class PlayerService() : Service() {
                         musicRepository.getNext()
 
                     }
-
-
-
-                    //                       track = musicRepository.getNext()
                 }
-
-                //                   updateMetadataFromTrack(track)
-
-                //                   refreshNotificationAndForegroundStatus(currentState)
-                CoroutineScope(Dispatchers.Main).launch {
-                    //                       prepareToPlay(Uri.parse(track.previewURL))
-                }
-
             }
 
             override fun onSkipToPrevious() {
-
                 if (musicRepository != null) {
                     CoroutineScope(Dispatchers.IO).launch {
                         musicRepository.getPrevious()
 
-
                     }
-
                 }
-                //                        track = musicRepository.getPrevious()
-
-
-                //                   updateMetadataFromTrack(track)
-                //                   refreshNotificationAndForegroundStatus(currentState)
-
-                //                       prepareToPlay(Uri.parse(track.previewURL))
-
             }
-
-
-
         }
 
     private fun updateMetadataFromTrack(track: Tracks) {
-
-        CoroutineScope(Dispatchers.Main).launch {
-            metadataBuilder.putBitmap(
-                MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
+        Log.d("MyLog", "track to image: $track")
+        downloadImage(track)
+ /*       CoroutineScope(Dispatchers.IO).launch {
+            metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
                 track.artistImageUri?.let { imageToBitmap(it, this@PlayerService) }
+
             )
-        }
-        //   Log.d("MyLog", "name: ${track.name}, album: ${track.albumName}, artistName: ${track.artistName}")
-        //              metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, track.name)
-        metadataBuilder.putString(
-            MediaMetadataCompat.METADATA_KEY_TITLE,
+        }*/
+
+        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE,
             track.name + "  (album: " + track.albumName + ")"
         )
-        //        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, track.albumName)
-//                metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, track.artistName)
-//                metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_DURATION, "30")
+        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, track.artistName)
+   //     metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 30000)
         mediaSession?.setMetadata(metadataBuilder.build())
     }
 
@@ -380,7 +351,9 @@ class PlayerService() : Service() {
 
     private fun getNotification(playbackState: Int): Notification {
         val builder: NotificationCompat.Builder? =
-            mediaSession?.let { MediaHelper.helpFrom(this, it) }
+            mediaSession?.let {
+                MediaHelper.helpFrom(this, it)
+            }
 
         if (builder != null) apply {
             builder.addAction(
@@ -420,16 +393,6 @@ class PlayerService() : Service() {
                     MediaButtonReceiver.buildMediaButtonPendingIntent(
                         this,
                         PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-                    )
-                )
-            )
-            builder.addAction(
-                NotificationCompat.Action(
-                    android.R.drawable.ic_menu_close_clear_cancel,
-                    "Stop",
-                    MediaButtonReceiver.buildMediaButtonPendingIntent(
-                        this,
-                        PlaybackStateCompat.ACTION_STOP
                     )
                 )
             )
@@ -477,16 +440,9 @@ class PlayerService() : Service() {
         }
     }
 
-    suspend fun getTrack(): Tracks? {
-        var track: Tracks? = null
-        musicRepository?.positionFlow?.collect {
-            track = it
-        }
-        return track
-
-    }
     var currentState = PlaybackStateCompat.STATE_STOPPED
-    fun updateTrack (track: Tracks?){
+
+    fun updateTrack(track: Tracks?) {
         track?.let {
             updateMetadataFromTrack(it)
             refreshNotificationAndForegroundStatus(currentState)
@@ -495,11 +451,11 @@ class PlayerService() : Service() {
         if (track != null) {
             updateMetadataFromTrack(track)
         }
-
     }
-    private var currentUri: Uri? = null
-    private fun prepareToPlay(uri: Uri) {
 
+    private var currentUri: Uri? = null
+
+    private fun prepareToPlay(uri: Uri) {
         if (uri != currentUri) {
             currentUri = uri
             val mediaSource =
@@ -514,26 +470,29 @@ class PlayerService() : Service() {
             }
         }
     }
-}
 
-
-
-
-fun imageToBitmap(artistImageUri: String, context: Context): Bitmap? {
-    var bitmap: Bitmap? = null
-    CoroutineScope(Dispatchers.IO).launch {
-        bitmap =
+    fun imageToBitmap(artistImageUri: String, context: Context): Bitmap? {
+        val bitmap =
             Glide.with(context)
                 .asBitmap()
                 .load(artistImageUri)
-                //           .override(356, 237)
-                .into(50, 50)
+                .submit()
                 .get()
-
+        return bitmap
     }
-    return bitmap
 
+    fun downloadImage (track: Tracks){
+        CoroutineScope(Dispatchers.IO).launch {
+            metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
+                track.artistImageUri?.let { imageToBitmap(it, this@PlayerService) }
+
+            )
+            Log.d("MyLog", "track2 to image: $track")
+        }
+    }
 }
+
+
 
 
 

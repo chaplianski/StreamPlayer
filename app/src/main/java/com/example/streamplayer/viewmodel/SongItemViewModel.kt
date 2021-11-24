@@ -21,7 +21,8 @@ class SongItemViewModel(application: Application): AndroidViewModel(application)
              init {
                           viewModelScope.launch {
                          repository?.positionFlow?.collectLatest { track ->
-                             if (track == null) repository.updateTrack()
+                            // if (track == null)
+                                 repository.updateTrack()
                              trackLiveData.postValue(track)
                              Log.d("MyLog", "sViewModel track: $track")
                          }

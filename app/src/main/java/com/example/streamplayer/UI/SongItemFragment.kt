@@ -59,8 +59,6 @@ class SongItemFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         songItemViewModel.trackLiveData.observe(this.viewLifecycleOwner, {
-            //   track = it
-            Log.d("MyLog", "track in songItemFragment: $it")
             if (it != null) {
                 fetchItemView(it)
             }
@@ -71,7 +69,7 @@ class SongItemFragment : Fragment() {
         var callback = object : MediaControllerCompat.Callback() {
             override fun onPlaybackStateChanged(state: PlaybackStateCompat) {
                 val playing = state.state == PlaybackStateCompat.STATE_PLAYING
-                val stoping = state.state == PlaybackStateCompat.STATE_STOPPED
+
                 when (state.state) {
                     1 -> {
                         binding.btStop.setEnabled(!playing)
@@ -127,7 +125,7 @@ class SongItemFragment : Fragment() {
         }
 
         val intentPlayerService = Intent(activity, PlayerService::class.java)
-        val executor: ExecutorService = Executors.newSingleThreadScheduledExecutor()
+ //       val executor: ExecutorService = Executors.newSingleThreadScheduledExecutor()
         serviceConnection?.let {
             activity?.bindService(
                 intentPlayerService,
@@ -137,10 +135,10 @@ class SongItemFragment : Fragment() {
         }
 
         binding.btPlayPause.setOnClickListener(View.OnClickListener {
-
+            if (mediaController != null)
+                mediaController!!.transportControls.play()
             if (statusButtom.equals("pause")) {
-                if (mediaController != null)
-                    mediaController!!.transportControls.play()
+
                 statusButtom = "play"
             } else if (statusButtom.equals("play")) {
                 if (mediaController != null)
@@ -159,27 +157,13 @@ class SongItemFragment : Fragment() {
 
             if (mediaController != null)
                 mediaController!!.transportControls.skipToNext()
-            /*********************  Если это добавить, то треки листаются. но нет синхронизации - отстает на 1 позицию  ***************
-            viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-            repository?.getCurrent()?.collect{ track ->
-            track?.let { it1 -> fetchItemView(it1) }
-            Log.d("MyLog", "track next in songItemFragment: $track")
-            }
-            }
-            }
-             */
+
         })
 
         binding.btBack.setOnClickListener(View.OnClickListener {
             if (mediaController != null)
                 mediaController!!.transportControls.skipToPrevious()
-            /*          viewLifecycleOwner.lifecycleScope.launch {
-                         repository?.getCurrent()?.collect{ track ->
-                              track?.let { it1 -> fetchItemView(it1) }
-                              Log.d("MyLog", "track back in songItemFragment: $track")
-                          }
-                      }*/
+
         })
 
         binding.btToHightLevel.setOnClickListener {
