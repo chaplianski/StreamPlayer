@@ -16,7 +16,9 @@
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_chat_number"
-        tools:src="@tools:sample/avatars" />
+        tools:src="@tools:sample/avatars"
+        android:radius="20dp"
+        />
 
     <TextView
         android:id="@+id/tv_artist_name"
@@ -131,7 +133,7 @@
                 android:src="@drawable/baseline_arrow_back_ios_24"
                 app:layout_constraintBottom_toBottomOf="@+id/bt_play_pause"
                 app:layout_constraintEnd_toStartOf="@+id/bt_play_pause"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@+id/bt_play_pause" />
 
             <ImageView
                 android:id="@+id/bt_to_hight_level"

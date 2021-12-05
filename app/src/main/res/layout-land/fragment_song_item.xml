@@ -69,19 +69,24 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
-        android:layout_width="350dp"
-        android:layout_height="90dp"
+        android:layout_width="380dp"
+        android:layout_height="50dp"
+        app:cardCornerRadius="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.982"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.977">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="350dp"
-            android:layout_height="90dp">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/bt_next"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="16dp"
                 android:clickable="true"
                 android:src="@drawable/baseline_arrow_forward_ios_24"
@@ -91,14 +96,14 @@
 
             <ImageView
                 android:id="@+id/bt_back"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginEnd="16dp"
                 android:clickable="true"
                 android:src="@drawable/baseline_arrow_back_ios_24"
                 app:layout_constraintBottom_toBottomOf="@+id/bt_play_pause"
                 app:layout_constraintEnd_toStartOf="@+id/bt_play_pause"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@+id/bt_play_pause" />
 
             <ImageView
                 android:id="@+id/bt_to_hight_level"
@@ -113,8 +118,8 @@
 
             <ImageView
                 android:id="@+id/bt_play_pause"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:clickable="true"
                 android:src="@drawable/baseline_play_24"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -141,11 +146,11 @@
         android:id="@+id/tv_chat_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:text="Number in chat"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.831"
+        app:layout_constraintHorizontal_bias="0.821"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

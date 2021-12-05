@@ -9,17 +9,13 @@ import android.os.IBinder
 import android.os.RemoteException
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.streamplayer.R
 import com.example.streamplayer.RepositoryInstance
@@ -27,14 +23,6 @@ import com.example.streamplayer.audioservice.PlayerService
 import com.example.streamplayer.databinding.FragmentSongItemBinding
 import com.example.streamplayer.model.Tracks
 import com.example.streamplayer.viewmodel.SongItemViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.launchIn
-import okhttp3.internal.notifyAll
 
 class SongItemFragment : Fragment() {
     lateinit var binding: FragmentSongItemBinding
@@ -57,6 +45,9 @@ class SongItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val buttonAnimation: Animation = AnimationUtils.loadAnimation(context, R.anim.click_button_animation)
+
 
         songItemViewModel.trackLiveData.observe(this.viewLifecycleOwner, {
             if (it != null) {
@@ -144,32 +135,36 @@ class SongItemFragment : Fragment() {
                 if (mediaController != null)
                     mediaController!!.transportControls.pause()
             }
+            binding.btPlayPause.startAnimation(buttonAnimation)
+
         })
 
         binding.btStop.setOnClickListener(View.OnClickListener {
 
             if (mediaController != null)
                 mediaController!!.transportControls.stop()
-
+            binding.btStop.startAnimation(buttonAnimation)
         })
 
         binding.btNext.setOnClickListener(View.OnClickListener {
 
             if (mediaController != null)
                 mediaController!!.transportControls.skipToNext()
-
+            binding.btNext.startAnimation(buttonAnimation)
         })
 
         binding.btBack.setOnClickListener(View.OnClickListener {
             if (mediaController != null)
                 mediaController!!.transportControls.skipToPrevious()
-
+            binding.btBack.startAnimation(buttonAnimation)
         })
 
         binding.btToHightLevel.setOnClickListener {
             if (mediaController != null)
                 mediaController!!.transportControls.stop()
-            findNavController().navigate(R.id.action_songItem_to_songList)
+            binding.btToHightLevel.startAnimation(buttonAnimation)
+            activity?.onBackPressed()
+        //  findNavController().navigate(R.id.action_songItem_to_songList)
         }
 
     }
@@ -194,9 +189,11 @@ class SongItemFragment : Fragment() {
 
         Glide.with(this).load(track.artistImageUri)
             .error(R.drawable.ic_launcher_background)
-            .override(1800, 1800)
+            .override(800, 800)
+
             //.override(, Target.SIZE_ORIGINAL)
             .centerCrop()
+            .circleCrop()
             //        .placeholder(R.drawable.ic_avatar_dog)
             .into(binding.imageView)
     }

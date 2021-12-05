@@ -12,7 +12,9 @@
         tools:layout="@layout/fragment_song_list" >
         <action
             android:id="@+id/action_songList_to_songItem"
-            app:destination="@id/songItem" />
+            app:destination="@id/songItem"
+            app:enterAnim="@anim/transition_in"
+            app:popExitAnim="@anim/transition_out" />
         <argument
             android:name="custonTrack"
             app:argType="com.example.streamplayer.model.Tracks" />
@@ -25,7 +27,9 @@
         <action
             android:id="@+id/action_songItem_to_songList"
 
-            app:destination="@id/songList" />
+            app:destination="@id/songList"
+            app:enterAnim="@anim/transition_in"
+            app:popExitAnim="@anim/transition_out" />
 
     </fragment>
 </navigation>

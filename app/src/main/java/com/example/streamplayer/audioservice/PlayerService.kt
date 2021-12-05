@@ -1,6 +1,7 @@
 package com.example.streamplayer.audioservice
 
 import android.R.attr
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -46,6 +47,7 @@ import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.cache.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
@@ -77,7 +79,7 @@ class PlayerService() : Service() {
     private var extractorsFactory: ExtractorsFactory? = null
     private var dataSourceFactory: DataSource.Factory? = null
     val musicRepository = RepositoryInstance.getMusicRepository()
-
+    var cache: Cache? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -133,13 +135,14 @@ class PlayerService() : Service() {
             OkHttpClient()
         )
 
-        val cache: Cache = SimpleCache(
+    //    val cache: Cache = SimpleCache(
+        cache = SimpleCache(
             File(this.cacheDir.absolutePath + "/exoplayer"), LeastRecentlyUsedCacheEvictor(
                 (1024 * 1024 * 100).toLong()
             )
         ) // 100 Mb max
         dataSourceFactory = CacheDataSourceFactory(
-            cache,
+            cache as SimpleCache,
             httpDataSourceFactory,
             CacheDataSource.FLAG_BLOCK_ON_CACHE or CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR
         )
@@ -163,6 +166,7 @@ class PlayerService() : Service() {
         super.onDestroy()
         mediaSession!!.release()
         exoPlayer!!.release()
+        cache?.release()
     }
 
     private val mediaSessionCallback: MediaSessionCompat.Callback =
@@ -250,11 +254,13 @@ class PlayerService() : Service() {
                 stopSelf()
             }
 
+
+
+
             override fun onSkipToNext() {
                 if (musicRepository != null) {
                     CoroutineScope(Dispatchers.IO).launch {
                         musicRepository.getNext()
-
                     }
                 }
             }
@@ -263,7 +269,6 @@ class PlayerService() : Service() {
                 if (musicRepository != null) {
                     CoroutineScope(Dispatchers.IO).launch {
                         musicRepository.getPrevious()
-
                     }
                 }
             }
@@ -272,18 +277,11 @@ class PlayerService() : Service() {
     private fun updateMetadataFromTrack(track: Tracks) {
         Log.d("MyLog", "track to image: $track")
         downloadImage(track)
- /*       CoroutineScope(Dispatchers.IO).launch {
-            metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
-                track.artistImageUri?.let { imageToBitmap(it, this@PlayerService) }
-
-            )
-        }*/
-
         metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE,
             track.name + "  (album: " + track.albumName + ")"
         )
         metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, track.artistName)
-   //     metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 30000)
+    //    metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 30000L)
         mediaSession?.setMetadata(metadataBuilder.build())
     }
 
@@ -308,15 +306,19 @@ class PlayerService() : Service() {
         override fun onTracksChanged(
             trackGroups: TrackGroupArray,
             trackSelections: TrackSelectionArray
-        ) {
+        ){
         }
 
         override fun onLoadingChanged(isLoading: Boolean) {
         }
 
+        @SuppressLint("WrongConstant")
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             if (playWhenReady && playbackState == ExoPlayer.STATE_ENDED) {
                 mediaSessionCallback.onSkipToNext()
+            }
+            if (playbackState == ExoPlayer.COMMAND_SET_REPEAT_MODE){
+                mediaSessionCallback.onSetRepeatMode(1)
             }
         }
 
@@ -481,14 +483,16 @@ class PlayerService() : Service() {
         return bitmap
     }
 
+
+
     fun downloadImage (track: Tracks){
-        CoroutineScope(Dispatchers.IO).launch {
+    //    CoroutineScope(Dispatchers.Default).async {
             metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
                 track.artistImageUri?.let { imageToBitmap(it, this@PlayerService) }
 
             )
             Log.d("MyLog", "track2 to image: $track")
-        }
+   //     }
     }
 }
 

@@ -13,6 +13,9 @@
     <string name="previous">Previous</string>
     <string name="next">Next</string>
 
+    <string name="day_theme">Day theme</string>
+    <string name="night_theme">Night theme</string>
+    <string name="auto_switch_theme">Auto switch theme</string>
 
 
 
