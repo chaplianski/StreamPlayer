@@ -1,4 +1,4 @@
-package com.example.streamplayer.UI
+package com.example.streamplayer.Presenter
 
 import android.content.ComponentName
 import android.content.Context
@@ -19,10 +19,10 @@ import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.streamplayer.R
 import com.example.streamplayer.RepositoryInstance
-import com.example.streamplayer.audioservice.PlayerService
+import com.example.streamplayer.Services.PlayerService
 import com.example.streamplayer.databinding.FragmentSongItemBinding
 import com.example.streamplayer.model.Tracks
-import com.example.streamplayer.viewmodel.SongItemViewModel
+import com.example.streamplayer.Viewmodels.SongItemViewModel
 
 class SongItemFragment : Fragment() {
     lateinit var binding: FragmentSongItemBinding

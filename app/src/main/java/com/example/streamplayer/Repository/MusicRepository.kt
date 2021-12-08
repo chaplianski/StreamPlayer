@@ -1,23 +1,17 @@
-package com.example.streamplayer.audioservice
+package com.example.streamplayer.Repository
 
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.flowWithLifecycle
 import com.example.streamplayer.db.TrackDatabase
 import com.example.streamplayer.model.ImagesItem
 import com.example.streamplayer.model.Tracks
-import com.example.streamplayer.service.ArtistImageApiService
-import com.example.streamplayer.service.TopListApiService
-import com.example.streamplayer.viewmodel.PositionViewModel
-import com.example.streamplayer.viewmodel.SongViewModel
-import com.google.android.exoplayer2.extractor.mp4.Track
+import com.example.streamplayer.Services.ArtistImageApiService
+import com.example.streamplayer.Services.TopListApiService
+import com.example.streamplayer.Viewmodels.SongViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
-import java.util.concurrent.Flow
 
 
 class MusicRepository(val context: Context) {

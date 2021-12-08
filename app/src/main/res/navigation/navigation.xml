@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/songList"
-        android:name="com.example.streamplayer.UI.SongListFragment"
+        android:name="com.example.streamplayer.Presenter.SongListFragment"
         android:label="fragment_song_list"
         tools:layout="@layout/fragment_song_list" >
         <action
@@ -21,7 +21,7 @@
     </fragment>
     <fragment
         android:id="@+id/songItem"
-        android:name="com.example.streamplayer.UI.SongItemFragment"
+        android:name="com.example.streamplayer.Presenter.SongItemFragment"
         android:label="fragment_song_item"
         tools:layout="@layout/fragment_song_item" >
         <action

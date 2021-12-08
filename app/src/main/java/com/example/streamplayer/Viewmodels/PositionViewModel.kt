@@ -1,10 +1,8 @@
-package com.example.streamplayer.viewmodel
+package com.example.streamplayer.Viewmodels
 
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import com.example.streamplayer.audioservice.MusicRepository
 
 class PositionViewModel(application: Application) : AndroidViewModel(application) {
 

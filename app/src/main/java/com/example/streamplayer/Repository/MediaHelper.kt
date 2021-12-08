@@ -1,4 +1,4 @@
-package com.example.streamplayer.audioservice
+package com.example.streamplayer.Repository
 
 import android.content.Context
 import android.support.v4.media.session.MediaSessionCompat

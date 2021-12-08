@@ -1,16 +1,12 @@
-package com.example.streamplayer.audioservice
+package com.example.streamplayer.Services
 
-import android.R.attr
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
@@ -22,19 +18,16 @@ import android.os.IBinder
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.transition.Transition
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.media.session.MediaButtonReceiver
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.target.SimpleTarget
 import com.example.streamplayer.R
 import com.example.streamplayer.RepositoryInstance
-import com.example.streamplayer.UI.SongItemFragment
+import com.example.streamplayer.Presenter.SongItemFragment
+import com.example.streamplayer.Repository.MediaHelper
 import com.example.streamplayer.model.Tracks
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
@@ -47,16 +40,10 @@ import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.cache.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import java.io.File
-import java.io.IOException
-import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.URL
-import java.util.stream.Stream
 
 
 class PlayerService() : Service() {

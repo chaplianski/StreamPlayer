@@ -1,4 +1,4 @@
-package com.example.streamplayer.adapters
+package com.example.streamplayer.Adapters
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -6,20 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.os.bundleOf
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.streamplayer.R
 import com.example.streamplayer.model.Tracks
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 class TrackListAdapter(

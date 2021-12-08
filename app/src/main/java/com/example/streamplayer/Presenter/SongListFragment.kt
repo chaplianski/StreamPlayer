@@ -1,4 +1,4 @@
-package com.example.streamplayer.UI
+package com.example.streamplayer.Presenter
 
 import android.animation.Animator
 import android.animation.AnimatorSet
@@ -10,12 +10,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -24,11 +22,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.streamplayer.R
 import com.example.streamplayer.RepositoryInstance
-import com.example.streamplayer.adapters.TrackListAdapter
+import com.example.streamplayer.Adapters.TrackListAdapter
 import com.example.streamplayer.model.Tracks
-import com.example.streamplayer.viewmodel.ListViewModelFactury
-import com.example.streamplayer.viewmodel.PositionViewModel
-import com.example.streamplayer.viewmodel.SongViewModel
+import com.example.streamplayer.Viewmodels.ListViewModelFactury
+import com.example.streamplayer.Viewmodels.PositionViewModel
+import com.example.streamplayer.Viewmodels.SongViewModel
 import java.util.*
 
 

@@ -1,23 +1,4 @@
-package com.example.streamplayer.service
-
-import android.app.*
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.os.Build
-import android.os.IBinder
-import android.util.Log
-import androidx.core.app.NotificationCompat
-import com.example.streamplayer.MainActivity
-import com.example.streamplayer.R
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.source.ConcatenatingMediaSource
-import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.ui.PlayerNotificationManager
-import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
-import kotlinx.coroutines.Job
+package com.example.streamplayer.Services
 
 /*
 class PlayerNotificationService : Service() {

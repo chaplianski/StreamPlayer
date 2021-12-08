@@ -1,8 +1,7 @@
 package com.example.streamplayer
 
 import android.app.Application
-import android.content.Context
-import com.example.streamplayer.audioservice.MusicRepository
+import com.example.streamplayer.Repository.MusicRepository
 
 class RepositoryInstance: Application() {
 

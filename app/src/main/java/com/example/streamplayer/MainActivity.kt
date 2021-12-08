@@ -3,7 +3,6 @@ package com.example.streamplayer
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +10,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.findNavController
-import com.example.streamplayer.audioservice.MusicRepository
 
 class MainActivity : AppCompatActivity(), ViewModelStoreOwner {
 

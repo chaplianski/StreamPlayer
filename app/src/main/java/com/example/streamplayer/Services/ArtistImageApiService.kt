@@ -1,4 +1,4 @@
-package com.example.streamplayer.service
+package com.example.streamplayer.Services
 
 import com.example.streamplayer.model.ArtistImages
 import com.example.streamplayer.model.ImagesItem
