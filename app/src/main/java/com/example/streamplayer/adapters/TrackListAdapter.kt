@@ -31,7 +31,7 @@ class TrackListAdapter(
 
 
     interface PositionTransfer {
-        public fun onChangePosition(position: Int)
+        fun onChangePosition(position: Int)
     }
 
 

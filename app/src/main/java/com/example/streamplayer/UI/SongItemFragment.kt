@@ -125,6 +125,16 @@ class SongItemFragment : Fragment() {
             )
         }
 
+        var switchRepeadMode = 0
+
+        binding.btStop.setOnClickListener(View.OnClickListener {
+            switchRepeadMode = 1
+                    if (mediaController != null)
+                        mediaController!!.transportControls.stop()
+            binding.btStop.startAnimation(buttonAnimation)
+        })
+
+
         binding.btPlayPause.setOnClickListener(View.OnClickListener {
             if (mediaController != null)
                 mediaController!!.transportControls.play()
@@ -139,12 +149,12 @@ class SongItemFragment : Fragment() {
 
         })
 
-        binding.btStop.setOnClickListener(View.OnClickListener {
-
-            if (mediaController != null)
-                mediaController!!.transportControls.stop()
-            binding.btStop.startAnimation(buttonAnimation)
-        })
+  //      binding.btStop.setOnClickListener(View.OnClickListener {
+  //          switchRepeadMode = 1
+    //        if (mediaController != null)
+    //            mediaController!!.transportControls.stop()
+   //         binding.btStop.startAnimation(buttonAnimation)
+  //      })
 
         binding.btNext.setOnClickListener(View.OnClickListener {
 

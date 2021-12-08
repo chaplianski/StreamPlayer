@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -71,22 +72,36 @@ class SongListFragment : Fragment()  {
         val noteLeft = view.findViewById<TextView>(R.id.tv_top_left)
         val noteRight = view.findViewById<TextView>(R.id.tv_top_right)
         val noteWait = view.findViewById<TextView>(R.id.tv_note_wait)
-        view.findViewById<ProgressBar>(R.id.progressBar).visibility = GONE
-    //    val logo = view.findViewById<ProgressBar>(R.id.progressBar)
-        logo.visibility = VISIBLE
 
         val set = AnimatorSet()
-        set.playSequentially(
-            firstDownLogo(logo),
-            CrashNotes(noteLeft,noteRight,noteWait,logo),
-    //        firstUpLogo(logo),
-            secondDownLogo(logo),
-            secondUpLogo(logo),
-            thirdDownLogo(logo),
-            waitNoteMotion(noteWait),
-            RotateLogo(logo),
+        val screenOrientation = resources.configuration.orientation
+        if (screenOrientation == Configuration.ORIENTATION_PORTRAIT){
+            set.playSequentially(
+                firstDownLogo(logo, -100f, 950f),
+                CrashNotes(noteLeft,noteRight,noteWait,logo),
+         //               firstUpLogo(logo),
+                secondDownLogo(logo, 950f),
+                secondUpLogo(logo, 800f),
+                thirdDownLogo(logo, 950f),
+                waitNoteMotion(noteWait),
+                RotateLogo(logo),
             )
-        set.start()
+            set.start()
+        }
+        if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE){
+            set.playSequentially(
+                firstDownLogo(logo, -100f, 1500f),
+                CrashNotes(noteLeft,noteRight,noteWait,logo),
+                //        firstUpLogo(logo),
+                secondDownLogo(logo, 1500f),
+                secondUpLogo(logo, 1350f),
+                thirdDownLogo(logo, 1500f),
+                waitNoteMotion(noteWait),
+                RotateLogo(logo),
+            )
+            set.start()
+        }
+
 
         topListAdapter = TrackListAdapter(tracks as ArrayList<Tracks>, object: TrackListAdapter.PositionTransfer{
             override fun onChangePosition(position: Int) {
@@ -106,10 +121,8 @@ class SongListFragment : Fragment()  {
                 viewModel.trackListLiveData.observe(this@SongListFragment.viewLifecycleOwner, { tracks ->
                     topListAdapter?.updateData(tracks)
 
-                //    view.findViewById<ProgressBar>(R.id.progressBar).startAnimation(logoAnimation)
-             //       view.findViewById<ProgressBar>(R.id.progressBar).visibility = GONE
-             //       view.findViewById<TextView>(R.id.tv_top_right).visibility = GONE
-             //       view.findViewById<TextView>(R.id.tv_note_wait).visibility = GONE
+               //     view.findViewById<TextView>(R.id.tv_top_right).visibility = GONE
+               //     view.findViewById<TextView>(R.id.tv_note_wait).visibility = GONE
                     logo.visibility = GONE
                     Log.d("MyLog", "tracks: $tracks ")
                 })
@@ -124,8 +137,8 @@ class SongListFragment : Fragment()  {
 
     }
 
-    fun firstDownLogo (logo: View): Animator{
-        val logoBegin = ObjectAnimator.ofFloat(logo,View.TRANSLATION_Y, -100f, 950f)
+    fun firstDownLogo (logo: View, from: Float, to: Float): Animator{
+        val logoBegin = ObjectAnimator.ofFloat(logo,View.TRANSLATION_Y, from, to)
         logoBegin.interpolator = AccelerateInterpolator()
         logoBegin.duration = 700
         return logoBegin
@@ -136,20 +149,20 @@ class SongListFragment : Fragment()  {
         logoBegin.duration = 400
         return logoBegin
     }
-    fun secondDownLogo (logo: View): Animator{
-        val logoBegin = ObjectAnimator.ofFloat(logo,View.TRANSLATION_Y, 950f)
+    fun secondDownLogo (logo: View, to: Float): Animator{
+        val logoBegin = ObjectAnimator.ofFloat(logo,View.TRANSLATION_Y, to)
         logoBegin.interpolator = AccelerateInterpolator()
         logoBegin.duration = 200
         return logoBegin
     }
-    fun secondUpLogo (logo: View): Animator{
-        val logoBegin = ObjectAnimator.ofFloat(logo,View.TRANSLATION_Y, 800f)
+    fun secondUpLogo (logo: View, to: Float): Animator{
+        val logoBegin = ObjectAnimator.ofFloat(logo,View.TRANSLATION_Y, to)
         logoBegin.interpolator = DecelerateInterpolator()
         logoBegin.duration = 150
         return logoBegin
     }
-    fun thirdDownLogo (logo: View): Animator{
-        val logoBegin = ObjectAnimator.ofFloat(logo,View.TRANSLATION_Y, 950f)
+    fun thirdDownLogo (logo: View, to: Float): Animator{
+        val logoBegin = ObjectAnimator.ofFloat(logo,View.TRANSLATION_Y, to)
         logoBegin.interpolator = AccelerateInterpolator()
         logoBegin.duration = 100
         return logoBegin

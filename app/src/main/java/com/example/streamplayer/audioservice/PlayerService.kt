@@ -227,7 +227,7 @@ class PlayerService() : Service() {
                 currentState = PlaybackStateCompat.STATE_PAUSED
                 refreshNotificationAndForegroundStatus(currentState)
             }
-
+/*
             override fun onStop() {
                 if (exoPlayer!!.playWhenReady) {
                     exoPlayer!!.playWhenReady = false
@@ -253,8 +253,45 @@ class PlayerService() : Service() {
                 refreshNotificationAndForegroundStatus(currentState)
                 stopSelf()
             }
+*/
+            override fun onStop() {
+                if (!exoPlayer!!.playWhenReady) {
+                    startService(Intent(applicationContext, PlayerService::class.java))
+                }
 
+                if (!audioFocusRequested) {
+                    audioFocusRequested = true
+                    val audioFocusResult: Int
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        audioFocusResult =
+                            audioManager!!.requestAudioFocus((audioFocusRequest)!!)
+                    } else {
+                        audioFocusResult = audioManager!!.requestAudioFocus(
+                            audioFocusChangeListener,
+                            AudioManager.STREAM_MUSIC,
+                            AudioManager.AUDIOFOCUS_GAIN
+                        )
+                    }
+                    if (audioFocusResult != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) return
+                }
+                mediaSession!!.isActive = true // Сразу после получения фокуса
+                registerReceiver(
+                    becomingNoisyReceiver,
+                    IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+                )
+                exoPlayer!!.playWhenReady = true
 
+                mediaSession!!.setPlaybackState(
+                    stateBuilder.setState(
+                        PlaybackStateCompat.STATE_PLAYING,
+                        PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,
+                        1f
+                    ).build()
+                )
+                exoPlayer!!.playWhenReady = true
+                currentState = PlaybackStateCompat.ACTION_SET_REPEAT_MODE.toInt()
+                refreshNotificationAndForegroundStatus(currentState)
+            }
 
 
             override fun onSkipToNext() {
@@ -315,11 +352,13 @@ class PlayerService() : Service() {
         @SuppressLint("WrongConstant")
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             if (playWhenReady && playbackState == ExoPlayer.STATE_ENDED) {
+
                 mediaSessionCallback.onSkipToNext()
             }
             if (playbackState == ExoPlayer.COMMAND_SET_REPEAT_MODE){
                 mediaSessionCallback.onSetRepeatMode(1)
             }
+
         }
 
         fun onPlayerError(error: ExoPlaybackException?) {}
