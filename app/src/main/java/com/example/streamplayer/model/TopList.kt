@@ -9,9 +9,6 @@ import kotlinx.parcelize.Parcelize
 
 data class TopList<T>(
 
-//	@Json(name="meta")
-//	val meta: Meta? = null,
-
 	@Json(name="tracks")
 	val tracks: List<Tracks?>? = null
 )
@@ -53,7 +50,6 @@ data class Tracks(
 
 	@Json(name="duration")
 	var duration: String? = "30000",
-
 
 ):Parcelable
 

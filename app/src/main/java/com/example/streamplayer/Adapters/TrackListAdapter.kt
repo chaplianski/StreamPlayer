@@ -64,8 +64,6 @@ class TrackListAdapter(
     var itemSongItemAristImage: ImageView = itemView.findViewById(R.id.iv_song_item_artist_image)
     var itemSongChatNumber: TextView = itemView.findViewById(R.id.tv_item_number)
 
-
-
     fun onBind(trackItem: Tracks) {
         itemSongArtist.text = trackItem.artistName
         itemSongTile.text = trackItem.name

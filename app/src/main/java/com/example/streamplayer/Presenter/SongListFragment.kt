@@ -34,20 +34,10 @@ class SongListFragment : Fragment()  {
 
     private var topListAdapter: TrackListAdapter? = null
 
-    /**
-     * One way to delay creation of the viewModel until an appropriate lifecycle method is to use
-     * lazy. This requires that viewModel not be referenced before onActivityCreated, which we
-     * do in this Fragment.
-     */
-//    private val viewModel: SongViewModel by activityViewModels()
-//    private val viewModel: SongViewModel by activityViewModels()
     var tracks = mutableListOf<Tracks>()
     val positionViewModel: PositionViewModel by activityViewModels()
-      val viewModel: SongViewModel by viewModels { ListViewModelFactury(requireActivity().application) }
-        val repository = RepositoryInstance.getMusicRepository()
-
-
-
+    val viewModel: SongViewModel by viewModels { ListViewModelFactury(requireActivity().application) }
+    val repository = RepositoryInstance.getMusicRepository()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,10 +52,6 @@ class SongListFragment : Fragment()  {
     @SuppressLint("Recycle")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-    //    val logoAnimation: Animation = AnimationUtils.loadAnimation(context, R.anim.enter_logo)
-   //        view.findViewById<ImageView>(R.id.iv_logo).visibility = VISIBLE
-    //    view.findViewById<ImageView>(R.id.iv_logo).startAnimation(logoAnimation)
         val logo = view.findViewById<ImageView>(R.id.iv_logo)
         val noteLeft = view.findViewById<TextView>(R.id.tv_top_left)
         val noteRight = view.findViewById<TextView>(R.id.tv_top_right)
@@ -77,7 +63,6 @@ class SongListFragment : Fragment()  {
             set.playSequentially(
                 firstDownLogo(logo, -100f, 950f),
                 CrashNotes(noteLeft,noteRight,noteWait,logo),
-         //               firstUpLogo(logo),
                 secondDownLogo(logo, 950f),
                 secondUpLogo(logo, 800f),
                 thirdDownLogo(logo, 950f),
@@ -90,7 +75,6 @@ class SongListFragment : Fragment()  {
             set.playSequentially(
                 firstDownLogo(logo, -100f, 1500f),
                 CrashNotes(noteLeft,noteRight,noteWait,logo),
-                //        firstUpLogo(logo),
                 secondDownLogo(logo, 1500f),
                 secondUpLogo(logo, 1350f),
                 thirdDownLogo(logo, 1500f),
@@ -104,8 +88,6 @@ class SongListFragment : Fragment()  {
         topListAdapter = TrackListAdapter(tracks as ArrayList<Tracks>, object: TrackListAdapter.PositionTransfer{
             override fun onChangePosition(position: Int) {
                 Log.d("MyLog","Position in ListFragment: $position ")
-
-            //    positionViewModel.getTrackPosition(position)
                 repository?.getTrackPosition(position)
             }
 
@@ -114,24 +96,15 @@ class SongListFragment : Fragment()  {
             layoutManager = LinearLayoutManager(requireActivity())
             adapter = topListAdapter
 
-
-        //    if (viewModel != null) {
                 viewModel.trackListLiveData.observe(this@SongListFragment.viewLifecycleOwner, { tracks ->
                     topListAdapter?.updateData(tracks)
-
                //     view.findViewById<TextView>(R.id.tv_top_right).visibility = GONE
                //     view.findViewById<TextView>(R.id.tv_note_wait).visibility = GONE
                     logo.visibility = GONE
                     Log.d("MyLog", "tracks: $tracks ")
                 })
-        //    }
-            //    Log.d("MyLog","tracks: $viewModelFactor ")
             Log.d("MyLog", "viewModel: $viewModel ")
-       //     Toast.makeText(activity, "Please wait", Toast.LENGTH_LONG).show()
-            //  viewModel.fetch()
-
-
-        }
+  }
 
     }
 

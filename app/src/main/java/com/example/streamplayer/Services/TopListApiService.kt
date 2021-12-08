@@ -13,8 +13,6 @@ import retrofit2.http.GET
 
 interface TopListApiService {
     @GET("/v2.2/tracks/top?apikey=NjEyMDFhMTktNjViNS00MjMyLWFlNzItMWI3YTUwNGMwNWJl")
-    //   @Headers("api_key:NjEyMDFhMTktNjViNS00MjMyLWFlNzItMWI3YTUwNGMwNWJl")
-    //   val api_key = "a0e438a13303912c905ba704375d08ef"
     fun fetchTracks(): Call <TopList<List<Tracks>>>
 
     companion object {
@@ -44,7 +42,4 @@ interface TopListApiService {
             return retrofit.create(TopListApiService::class.java)
         }
     }
-
-
-
 }

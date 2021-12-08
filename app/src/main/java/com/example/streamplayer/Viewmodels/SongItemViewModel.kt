@@ -13,22 +13,20 @@ import kotlinx.coroutines.launch
 
 class SongItemViewModel(application: Application): AndroidViewModel(application) {
 
-    //   var trackItemLiveData: MutableLiveData<List<Tracks>> = MutableLiveData()
     var trackLiveData: MutableLiveData<Tracks?> = MutableLiveData()
     val repository = RepositoryInstance.getMusicRepository()
 
+    init {
+        viewModelScope.launch {
+            repository?.positionFlow?.collectLatest { track ->
+                // if (track == null)
+                repository.updateTrack()
+                trackLiveData.postValue(track)
+                Log.d("MyLog", "sViewModel track: $track")
+            }
 
-             init {
-                          viewModelScope.launch {
-                         repository?.positionFlow?.collectLatest { track ->
-                            // if (track == null)
-                                 repository.updateTrack()
-                             trackLiveData.postValue(track)
-                             Log.d("MyLog", "sViewModel track: $track")
-                         }
-
-                     }
-                 }
+        }
+    }
 }
 
 

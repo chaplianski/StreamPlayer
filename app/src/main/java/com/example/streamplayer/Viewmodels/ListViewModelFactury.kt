@@ -13,10 +13,4 @@ class ListViewModelFactury(private val aplication: Application) : ViewModelProvi
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
-
-
-
-    //    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-      //      return modelClass.getConstructor(Application::class.java).newInstance(aplication)
-    //    }
 }

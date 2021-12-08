@@ -13,19 +13,13 @@ import kotlinx.coroutines.launch
 class SongViewModel(application: Application) : AndroidViewModel(application) {
 
     var trackListLiveData: MutableLiveData<List<Tracks>> = MutableLiveData()
-    //  var trackListLiveData: LiveData<List<Tracks>>
-    //       get() = _trackListLiveData
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
-        //    val repository = MusicRepository(getApplication())
             val repository = RepositoryInstance.getMusicRepository()
             trackListLiveData.postValue(repository?.fetch())
-   //         Log.d("MyLog", "ViewModel: ${trackListLiveData.toString()}")
-        }
+         }
     }
-
-    fun getListTracks() = trackListLiveData
 
     companion object {
         const val MY_LOG = "MyLog"

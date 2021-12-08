@@ -5,14 +5,10 @@ import com.example.streamplayer.Repository.MusicRepository
 
 class RepositoryInstance: Application() {
 
-
-
-
     override fun onCreate() {
         super.onCreate()
         var musicRepository = MusicRepository (applicationContext)
         mRepository = musicRepository
-
     }
 
     companion object{

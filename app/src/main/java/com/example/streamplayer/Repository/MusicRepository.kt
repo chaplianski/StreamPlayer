@@ -16,44 +16,44 @@ import kotlinx.coroutines.launch
 
 class MusicRepository(val context: Context) {
 
-     var tracks = mutableListOf<Tracks>()
+    var tracks = mutableListOf<Tracks>()
 
-    suspend fun fetch(): MutableList <Tracks> {
+    suspend fun fetch(): MutableList<Tracks> {
 
-            val retrofit = TopListApiService.getApiService()
-            val call = retrofit.fetchTracks()
+        val retrofit = TopListApiService.getApiService()
+        val call = retrofit.fetchTracks()
 
-            val response = call.execute()
+        val response = call.execute()
 
-            if (response.isSuccessful.not()) { // if failed call
-               Log.d(SongViewModel.MY_LOG, response.message() + response.errorBody()?.toString())
-        //        return@launch
+        if (response.isSuccessful.not()) { // if failed call
+            Log.d(SongViewModel.MY_LOG, response.message() + response.errorBody()?.toString())
+            //        return@launch
+        }
+
+        val trackResponse = response.body()
+        if (trackResponse == null) {
+            //       _trackListLiveData.postValue(emptyList())
+            //        return@launch
+        } else {
+
+            val resp: List<Tracks> = trackResponse.tracks as List<Tracks>
+
+            for (i in resp.indices) {
+                val artistId = resp[i].artistId
+                val artistImage = fetchArtistImg(artistId.toString())
+                Log.d(SongViewModel.MY_LOG, "$artistImage")
+                resp[i].artistImageUri = artistImage
+                resp[i].artistChatNumber = i + 1
+                tracks.add(resp[i])
             }
-
-            val trackResponse = response.body()
-            if (trackResponse == null) {
-         //       _trackListLiveData.postValue(emptyList())
-        //        return@launch
-            } else {
-
-                val resp: List<Tracks> = trackResponse.tracks as List<Tracks>
-
-                for (i in resp.indices) {
-                    val artistId = resp[i].artistId
-                    val artistImage = fetchArtistImg(artistId.toString())
-                    Log.d(SongViewModel.MY_LOG, "$artistImage")
-                    resp[i].artistImageUri = artistImage
-                    resp[i].artistChatNumber = i+1
-                    tracks.add(resp[i])
-                }
-                val trackDatabase = TrackDatabase.getDatabase(context)
-                trackDatabase.TrackDao().deleteAll()
-                tracks.forEachIndexed {i, value -> trackDatabase.TrackDao().insertTrack(tracks[i])}
-                return tracks
-
-            }
-
+            val trackDatabase = TrackDatabase.getDatabase(context)
+            trackDatabase.TrackDao().deleteAll()
+            tracks.forEachIndexed { i, value -> trackDatabase.TrackDao().insertTrack(tracks[i]) }
             return tracks
+
+        }
+
+        return tracks
     }
 
     private suspend fun fetchArtistImg(artistId: String): String {
@@ -75,29 +75,22 @@ class MusicRepository(val context: Context) {
         return ""
     }
 
- //**************************************
-
     suspend fun getTrackList(): List<Tracks> {
-           val trackDatabase = TrackDatabase.getDatabase(context)
-           val list = trackDatabase.TrackDao().getAll()
+        val trackDatabase = TrackDatabase.getDatabase(context)
+        val list = trackDatabase.TrackDao().getAll()
 
         return list
     }
-
-//*********************************** Координация с навигацией плеера *********
-
- //   var currentItemIndex = PositionViewModel.getPosition()+1
 
     var currentItemIndex = 1
 
     fun getTrackPosition(position: Int): Int {
         Log.d("MyLog", "Position in Repository: $position")
-        currentItemIndex = position+1
+        currentItemIndex = position + 1
         return position
     }
 
     val maxIndex = 19
-
 
     suspend fun getNext() {
 
@@ -115,14 +108,15 @@ class MusicRepository(val context: Context) {
 
     val positionFlow: MutableStateFlow<Tracks?> = MutableStateFlow(null)
 
-    suspend fun updateTrack (){
+    suspend fun updateTrack() {
         CoroutineScope(Dispatchers.IO).launch {
             getCurrent()
         }
     }
 
     suspend fun getCurrent() {
-        val tracks = TrackDatabase.getDatabase(context).TrackDao().getTrackWithChatNumber(currentItemIndex)
+        val tracks =
+            TrackDatabase.getDatabase(context).TrackDao().getTrackWithChatNumber(currentItemIndex)
         Log.d("MyLog", "tracks in Repository: $tracks")
         positionFlow.value = tracks
     }

@@ -27,12 +27,9 @@ import com.example.streamplayer.Viewmodels.SongItemViewModel
 class SongItemFragment : Fragment() {
     lateinit var binding: FragmentSongItemBinding
     private val songItemViewModel: SongItemViewModel by viewModels()
-    //{ListViewModelFactury(requireActivity().application)}
-    var trackList = emptyList<Tracks>()
     private var playerServiceBinder: PlayerService.PlayerServiceBinder? = null
     private var playerService: PlayerService? = null
     private var mediaController: MediaControllerCompat? = null
-    val repository = RepositoryInstance.getMusicRepository()
     private var serviceConnection: ServiceConnection? = null
 
     override fun onCreateView(
@@ -46,14 +43,13 @@ class SongItemFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val buttonAnimation: Animation = AnimationUtils.loadAnimation(context, R.anim.click_button_animation)
-
+        val buttonAnimation: Animation =
+            AnimationUtils.loadAnimation(context, R.anim.click_button_animation)
 
         songItemViewModel.trackLiveData.observe(this.viewLifecycleOwner, {
             if (it != null) {
                 fetchItemView(it)
             }
-
         })
 
         var statusButtom = "play"
@@ -97,8 +93,6 @@ class SongItemFragment : Fragment() {
                     mediaController?.registerCallback(callback as MediaControllerCompat.Callback)
                     mediaController?.playbackState?.let {
                         callback.onPlaybackStateChanged(it)
-                        //                       (callback as MediaControllerCompat.Callback).onPlaybackStateChanged(
-                        //                           mediaController!!.playbackState)
                     }
                 } catch (e: RemoteException) {
                     mediaController = null
@@ -116,7 +110,6 @@ class SongItemFragment : Fragment() {
         }
 
         val intentPlayerService = Intent(activity, PlayerService::class.java)
- //       val executor: ExecutorService = Executors.newSingleThreadScheduledExecutor()
         serviceConnection?.let {
             activity?.bindService(
                 intentPlayerService,
@@ -129,8 +122,8 @@ class SongItemFragment : Fragment() {
 
         binding.btStop.setOnClickListener(View.OnClickListener {
             switchRepeadMode = 1
-                    if (mediaController != null)
-                        mediaController!!.transportControls.stop()
+            if (mediaController != null)
+                mediaController!!.transportControls.stop()
             binding.btStop.startAnimation(buttonAnimation)
         })
 
@@ -149,12 +142,12 @@ class SongItemFragment : Fragment() {
 
         })
 
-  //      binding.btStop.setOnClickListener(View.OnClickListener {
-  //          switchRepeadMode = 1
-    //        if (mediaController != null)
-    //            mediaController!!.transportControls.stop()
-   //         binding.btStop.startAnimation(buttonAnimation)
-  //      })
+        //      binding.btStop.setOnClickListener(View.OnClickListener {
+        //          switchRepeadMode = 1
+        //        if (mediaController != null)
+        //            mediaController!!.transportControls.stop()
+        //         binding.btStop.startAnimation(buttonAnimation)
+        //      })
 
         binding.btNext.setOnClickListener(View.OnClickListener {
 
@@ -174,7 +167,7 @@ class SongItemFragment : Fragment() {
                 mediaController!!.transportControls.stop()
             binding.btToHightLevel.startAnimation(buttonAnimation)
             activity?.onBackPressed()
-        //  findNavController().navigate(R.id.action_songItem_to_songList)
+            //  findNavController().navigate(R.id.action_songItem_to_songList)
         }
 
     }

@@ -17,19 +17,9 @@ interface TrackDao {
     @androidx.room.Query("SELECT * FROM track_table")
      fun getAll(): List<Tracks>
 
- //   @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    suspend fun insertAll(track: List<Tracks>)
-
     @androidx.room.Query ("DELETE FROM track_table")
     fun deleteAll ()
 
     @androidx.room.Query("SELECT * FROM track_table WHERE artistChatNumber LIKE :artistChatNumber")
     fun getTrackWithChatNumber(artistChatNumber: Int): Tracks
- //   fun getTrackWithChatNumber(artistChatNumber: Int): Flow<Tracks>
-
- //   @androidx.room.Query("SELECT COUNT(*) FROM track_table")
- //   suspend fun getTracksCount(): Int
-
- //   @androidx.room.Query("SELECT track FROM track_table")
- //   fun getTrack(): Tracks
-}
+ }
