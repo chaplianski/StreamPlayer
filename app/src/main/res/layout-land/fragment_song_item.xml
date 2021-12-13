@@ -20,7 +20,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
-        tools:src="@tools:sample/avatars" />
+        tools:src="@tools:sample/avatars"
+        android:contentDescription="Photo of artist" />
 
     <TextView
         android:id="@+id/tv_artist_name"
@@ -129,11 +130,11 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:id="@+id/bt_stop"
+                android:id="@+id/bt_repeate"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginStart="16dp"
-                android:src="@drawable/baseline_stop_24"
+                android:src="@drawable/ic_baseline_cached_24"
                 app:layout_constraintBottom_toBottomOf="@+id/bt_next"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"

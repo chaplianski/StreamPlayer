@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/user/AndroidStudioProjects/StreamPlayer/app/src/main/res/drawable-v24/baseline_arrow_back_ios_24.xml" value="0.25435897435897437" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/StreamPlayer/app/src/main/res/drawable-v24/baseline_arrow_forward_ios_24.xml" value="0.25435897435897437" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/StreamPlayer/app/src/main/res/drawable-v24/baseline_stop_24.xml" value="0.25435897435897437" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/StreamPlayer/app/src/main/res/drawable/ic_baseline_cached_24.xml" value="0.25435897435897437" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/StreamPlayer/app/src/main/res/drawable/ic_baseline_cached_24_red.xml" value="0.25435897435897437" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/StreamPlayer/app/src/main/res/drawable/ic_napster_light_logo.xml" value="0.18958333333333333" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/StreamPlayer/app/src/main/res/drawable/ic_repeate.xml" value="6.4" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/StreamPlayer/app/src/main/res/drawable/ic_repeate_black.xml" value="0.25435897435897437" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/StreamPlayer/app/src/main/res/drawable/ic_repeate_red.xml" value="0.25435897435897437" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/StreamPlayer/app/src/main/res/drawable/napster_icon.xml" value="0.25435897435897437" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/StreamPlayer/app/src/main/res/drawable/rotate_download_icon.xml" value="0.25435897435897437" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/StreamPlayer/app/src/main/res/layout-land/fragment_song_item.xml" value="0.20989583333333334" />
+        <entry key="..\:/Users/user/AndroidStudioProjects/StreamPlayer/app/src/main/res/layout/fragment_song_item.xml" value="0.4" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

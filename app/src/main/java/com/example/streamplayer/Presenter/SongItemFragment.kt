@@ -9,6 +9,7 @@ import android.os.IBinder
 import android.os.RemoteException
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ONE
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,12 +24,19 @@ import com.example.streamplayer.Services.PlayerService
 import com.example.streamplayer.databinding.FragmentSongItemBinding
 import com.example.streamplayer.model.Tracks
 import com.example.streamplayer.Viewmodels.SongItemViewModel
+import com.google.android.exoplayer2.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 
 class SongItemFragment : Fragment() {
     lateinit var binding: FragmentSongItemBinding
     private val songItemViewModel: SongItemViewModel by viewModels()
     private var playerServiceBinder: PlayerService.PlayerServiceBinder? = null
-    private var playerService: PlayerService? = null
     private var mediaController: MediaControllerCompat? = null
     private var serviceConnection: ServiceConnection? = null
 
@@ -40,6 +48,7 @@ class SongItemFragment : Fragment() {
         return binding.root
     }
 
+    var flowMode: MutableStateFlow<Int?> = MutableStateFlow(null)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -53,16 +62,12 @@ class SongItemFragment : Fragment() {
         })
 
         var statusButtom = "play"
-        var callback = object : MediaControllerCompat.Callback() {
+
+        val callback = object : MediaControllerCompat.Callback() {
             override fun onPlaybackStateChanged(state: PlaybackStateCompat) {
                 val playing = state.state == PlaybackStateCompat.STATE_PLAYING
 
                 when (state.state) {
-                    1 -> {
-                        binding.btStop.setEnabled(!playing)
-                        binding.btPlayPause.setImageResource(R.drawable.baseline_play_24)
-                        statusButtom = "pause"
-                    }
                     2 -> {
                         binding.btPlayPause.setImageResource(R.drawable.baseline_play_24)
                         statusButtom = "pause"
@@ -106,7 +111,6 @@ class SongItemFragment : Fragment() {
                     mediaController = null
                 }
             }
-
         }
 
         val intentPlayerService = Intent(activity, PlayerService::class.java)
@@ -118,58 +122,53 @@ class SongItemFragment : Fragment() {
             )
         }
 
-        var switchRepeadMode = 0
+            var repeatState = 0
+        binding.btRepeate.setOnClickListener{
+            repeatState++
+            if (repeatState > 1) {
+                repeatState = 0
+            }
+            binding.btRepeate.startAnimation(buttonAnimation)
+            if (repeatState == 1) binding.btRepeate.setImageResource(R.drawable.ic_baseline_cached_24_red)
+            if (repeatState == 0) binding.btRepeate.setImageResource(R.drawable.ic_baseline_cached_24)
+            mediaController?.transportControls?.stop()
+        }
 
-        binding.btStop.setOnClickListener(View.OnClickListener {
-            switchRepeadMode = 1
-            if (mediaController != null)
-                mediaController!!.transportControls.stop()
-            binding.btStop.startAnimation(buttonAnimation)
-        })
-
-
-        binding.btPlayPause.setOnClickListener(View.OnClickListener {
+        binding.btPlayPause.setOnClickListener{
             if (mediaController != null)
                 mediaController!!.transportControls.play()
             if (statusButtom.equals("pause")) {
-
                 statusButtom = "play"
             } else if (statusButtom.equals("play")) {
-                if (mediaController != null)
+                if (mediaController != null && repeatState == 1){
                     mediaController!!.transportControls.pause()
+                }else {
+                    mediaController!!.transportControls.pause()
+                }
+
             }
             binding.btPlayPause.startAnimation(buttonAnimation)
+        }
 
-        })
-
-        //      binding.btStop.setOnClickListener(View.OnClickListener {
-        //          switchRepeadMode = 1
-        //        if (mediaController != null)
-        //            mediaController!!.transportControls.stop()
-        //         binding.btStop.startAnimation(buttonAnimation)
-        //      })
-
-        binding.btNext.setOnClickListener(View.OnClickListener {
+        binding.btNext.setOnClickListener {
 
             if (mediaController != null)
                 mediaController!!.transportControls.skipToNext()
             binding.btNext.startAnimation(buttonAnimation)
-        })
+        }
 
-        binding.btBack.setOnClickListener(View.OnClickListener {
+        binding.btBack.setOnClickListener{
             if (mediaController != null)
                 mediaController!!.transportControls.skipToPrevious()
             binding.btBack.startAnimation(buttonAnimation)
-        })
+        }
 
         binding.btToHightLevel.setOnClickListener {
             if (mediaController != null)
                 mediaController!!.transportControls.stop()
             binding.btToHightLevel.startAnimation(buttonAnimation)
             activity?.onBackPressed()
-            //  findNavController().navigate(R.id.action_songItem_to_songList)
         }
-
     }
 
     override fun onDestroy() {
@@ -182,7 +181,6 @@ class SongItemFragment : Fragment() {
         serviceConnection?.let { activity?.unbindService(it) }
     }
 
-
     fun fetchItemView(track: Tracks) {
 
         binding.tvArtistName.text = track.artistName
@@ -193,32 +191,9 @@ class SongItemFragment : Fragment() {
         Glide.with(this).load(track.artistImageUri)
             .error(R.drawable.ic_launcher_background)
             .override(800, 800)
-
-            //.override(, Target.SIZE_ORIGINAL)
             .centerCrop()
             .circleCrop()
-            //        .placeholder(R.drawable.ic_avatar_dog)
             .into(binding.imageView)
     }
-    /******************** Вариант с запросом при наличии номера позиции ***************************
-    fun fetchView(positionFromList: Int) {
-    if (trackList.size > positionFromList) {
-    binding.tvArtistName.text = trackList.get(positionFromList).artistName
-    binding.tvAlbumName.text = trackList.get(positionFromList).albumName
-    binding.tvSongName.text = trackList.get(positionFromList).name
-    binding.tvChatNumber.text = "Number in chat # ${positionFromList + 1}"
-
-    Glide.with(this).load(trackList.get(positionFromList).artistImageUri)
-    .error(R.drawable.ic_launcher_background)
-    .override(1800, 1800)
-    //.override(, Target.SIZE_ORIGINAL)
-    .centerCrop()
-    //        .placeholder(R.drawable.ic_avatar_dog)
-    .into(binding.imageView)
-    }
-    }
-     */
-
-
 }
 

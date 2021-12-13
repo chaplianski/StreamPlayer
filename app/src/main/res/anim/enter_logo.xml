@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:ignore="ExtraText">
+        <alpha
+            android:fromAlpha="0"
+            android:toAlpha="1"
+            android:duration="5000"
+            />
+        <translate
+            android:fromXDelta="25"
+            android:fromYDelta="25"
+            android:toXDelta="50"
+            android:toYDelta="25"
+            android:duration="5000"
+            android:ordering="sequentially"/>
+
+        <rotate
+            android:fromDegrees="0"
+            android:toDegrees="360"
+            android:duration="15000"
+            android:ordering="sequentially"
+            />
+
+
+
+        android:ordering="sequentially"
+</set>

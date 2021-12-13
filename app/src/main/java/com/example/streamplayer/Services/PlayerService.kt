@@ -30,6 +30,8 @@ import com.example.streamplayer.Presenter.SongItemFragment
 import com.example.streamplayer.Repository.MediaHelper
 import com.example.streamplayer.model.Tracks
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.Player.REPEAT_MODE_OFF
+import com.google.android.exoplayer2.Player.REPEAT_MODE_ONE
 import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.extractor.ExtractorsFactory
@@ -40,6 +42,7 @@ import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.cache.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
@@ -67,6 +70,7 @@ class PlayerService() : Service() {
     private var dataSourceFactory: DataSource.Factory? = null
     val musicRepository = RepositoryInstance.getMusicRepository()
     var cache: Cache? = null
+    var repeatState = 0
 
     override fun onCreate() {
         super.onCreate()
@@ -122,7 +126,7 @@ class PlayerService() : Service() {
             OkHttpClient()
         )
 
-    //    val cache: Cache = SimpleCache(
+        //    val cache: Cache = SimpleCache(
         cache = SimpleCache(
             File(this.cacheDir.absolutePath + "/exoplayer"), LeastRecentlyUsedCacheEvictor(
                 (1024 * 1024 * 100).toLong()
@@ -156,8 +160,23 @@ class PlayerService() : Service() {
         cache?.release()
     }
 
+
     private val mediaSessionCallback: MediaSessionCompat.Callback =
         object : MediaSessionCompat.Callback() {
+
+
+            override fun onStop() {
+                repeatState++
+                if (repeatState > 1) repeatState = 0
+                Log.d("MyLog", "repeateState = $repeatState")
+                onPlay()
+            }
+
+            override fun onSetRepeatMode(repeatMode: Int) {
+                super.onSetRepeatMode(repeatMode)
+                onPlay()
+            }
+
 
             override fun onPlay() {
 
@@ -180,12 +199,12 @@ class PlayerService() : Service() {
                     }
                     if (audioFocusResult != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) return
                 }
-                mediaSession!!.isActive = true // Сразу после получения фокуса
+                mediaSession?.isActive = true // Сразу после получения фокуса
                 registerReceiver(
                     becomingNoisyReceiver,
                     IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
                 )
-                exoPlayer!!.playWhenReady = true
+                exoPlayer?.playWhenReady = true
 
                 mediaSession!!.setPlaybackState(
                     stateBuilder.setState(
@@ -194,7 +213,17 @@ class PlayerService() : Service() {
                         1f
                     ).build()
                 )
-                exoPlayer!!.playWhenReady = true
+                exoPlayer?.playWhenReady = true
+                if (repeatState == 1) {
+                    Log.d("MyLog", "onPlay: $repeatState")
+                    exoPlayer?.repeatMode = REPEAT_MODE_ONE
+
+                }
+                if (repeatState == 0) {
+                    Log.d("MyLog", "onPlay: $repeatState")
+                    exoPlayer?.repeatMode = REPEAT_MODE_OFF
+                }
+
                 currentState = PlaybackStateCompat.STATE_PLAYING
                 refreshNotificationAndForegroundStatus(currentState)
             }
@@ -214,72 +243,6 @@ class PlayerService() : Service() {
                 currentState = PlaybackStateCompat.STATE_PAUSED
                 refreshNotificationAndForegroundStatus(currentState)
             }
-/*
-            override fun onStop() {
-                if (exoPlayer!!.playWhenReady) {
-                    exoPlayer!!.playWhenReady = false
-                    unregisterReceiver(becomingNoisyReceiver)
-                }
-                if (audioFocusRequested) {
-                    audioFocusRequested = false
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        audioManager!!.abandonAudioFocusRequest((audioFocusRequest)!!)
-                    } else {
-                        audioManager!!.abandonAudioFocus(audioFocusChangeListener)
-                    }
-                }
-                mediaSession!!.isActive = false
-                mediaSession!!.setPlaybackState(
-                    stateBuilder.setState(
-                        PlaybackStateCompat.STATE_STOPPED,
-                        PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,
-                        1f
-                    ).build()
-                )
-                currentState = PlaybackStateCompat.ACTION_STOP.toInt()
-                refreshNotificationAndForegroundStatus(currentState)
-                stopSelf()
-            }
-*/
-            override fun onStop() {
-                if (!exoPlayer!!.playWhenReady) {
-                    startService(Intent(applicationContext, PlayerService::class.java))
-                }
-
-                if (!audioFocusRequested) {
-                    audioFocusRequested = true
-                    val audioFocusResult: Int
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        audioFocusResult =
-                            audioManager!!.requestAudioFocus((audioFocusRequest)!!)
-                    } else {
-                        audioFocusResult = audioManager!!.requestAudioFocus(
-                            audioFocusChangeListener,
-                            AudioManager.STREAM_MUSIC,
-                            AudioManager.AUDIOFOCUS_GAIN
-                        )
-                    }
-                    if (audioFocusResult != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) return
-                }
-                mediaSession!!.isActive = true // Сразу после получения фокуса
-                registerReceiver(
-                    becomingNoisyReceiver,
-                    IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-                )
-                exoPlayer!!.playWhenReady = true
-
-                mediaSession!!.setPlaybackState(
-                    stateBuilder.setState(
-                        PlaybackStateCompat.STATE_PLAYING,
-                        PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,
-                        1f
-                    ).build()
-                )
-                exoPlayer!!.playWhenReady = true
-                currentState = PlaybackStateCompat.ACTION_SET_REPEAT_MODE.toInt()
-                refreshNotificationAndForegroundStatus(currentState)
-            }
-
 
             override fun onSkipToNext() {
                 if (musicRepository != null) {
@@ -296,16 +259,18 @@ class PlayerService() : Service() {
                     }
                 }
             }
+
         }
 
     private fun updateMetadataFromTrack(track: Tracks) {
         Log.d("MyLog", "track to image: $track")
         downloadImage(track)
-        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE,
+        metadataBuilder.putString(
+            MediaMetadataCompat.METADATA_KEY_TITLE,
             track.name + "  (album: " + track.albumName + ")"
         )
         metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, track.artistName)
-    //    metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 30000L)
+        //    metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 30000L)
         mediaSession?.setMetadata(metadataBuilder.build())
     }
 
@@ -313,7 +278,7 @@ class PlayerService() : Service() {
     private val audioFocusChangeListener: OnAudioFocusChangeListener =
         OnAudioFocusChangeListener { focusChange ->
             when (focusChange) {
-                AudioManager.AUDIOFOCUS_GAIN -> mediaSessionCallback.onPlay() // Не очень красиво
+                AudioManager.AUDIOFOCUS_GAIN -> mediaSessionCallback.onPlay()
                 AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> mediaSessionCallback.onPause()
                 else -> mediaSessionCallback.onPause()
             }
@@ -330,22 +295,22 @@ class PlayerService() : Service() {
         override fun onTracksChanged(
             trackGroups: TrackGroupArray,
             trackSelections: TrackSelectionArray
-        ){
+        ) {
         }
 
         override fun onLoadingChanged(isLoading: Boolean) {
         }
 
+
         @SuppressLint("WrongConstant")
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             if (playWhenReady && playbackState == ExoPlayer.STATE_ENDED) {
-
-                mediaSessionCallback.onSkipToNext()
+                if (repeatState == 1) {
+                    mediaSessionCallback.onSetRepeatMode(REPEAT_MODE_ONE)
+                } else {
+                    mediaSessionCallback.onSkipToNext()
+                }
             }
-            if (playbackState == ExoPlayer.COMMAND_SET_REPEAT_MODE){
-                mediaSessionCallback.onSetRepeatMode(1)
-            }
-
         }
 
         fun onPlayerError(error: ExoPlaybackException?) {}
@@ -453,8 +418,8 @@ class PlayerService() : Service() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = getString(com.example.streamplayer.R.string.channel_name)
-            val descriptionText = getString(com.example.streamplayer.R.string.channel_desc)
+            val name = getString(R.string.channel_name)
+            val descriptionText = getString(R.string.channel_desc)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
 
             val serviceChannel = NotificationChannel(
@@ -474,7 +439,7 @@ class PlayerService() : Service() {
         track?.let {
             updateMetadataFromTrack(it)
             refreshNotificationAndForegroundStatus(currentState)
-            prepareToPlay(Uri.parse(track?.previewURL))
+            prepareToPlay(Uri.parse(track.previewURL))
         }
         if (track != null) {
             updateMetadataFromTrack(track)
@@ -509,16 +474,11 @@ class PlayerService() : Service() {
         return bitmap
     }
 
+    fun downloadImage(track: Tracks) {
+        metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
+            track.artistImageUri?.let { imageToBitmap(it, this@PlayerService) }
 
-
-    fun downloadImage (track: Tracks){
-    //    CoroutineScope(Dispatchers.Default).async {
-            metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
-                track.artistImageUri?.let { imageToBitmap(it, this@PlayerService) }
-
-            )
-            Log.d("MyLog", "track2 to image: $track")
-   //     }
+        )
     }
 }
 

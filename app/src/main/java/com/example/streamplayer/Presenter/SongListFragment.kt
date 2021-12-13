@@ -16,17 +16,15 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.streamplayer.Adapters.TrackListAdapter
 import com.example.streamplayer.R
 import com.example.streamplayer.RepositoryInstance
-import com.example.streamplayer.Adapters.TrackListAdapter
-import com.example.streamplayer.model.Tracks
 import com.example.streamplayer.Viewmodels.ListViewModelFactury
-import com.example.streamplayer.Viewmodels.PositionViewModel
 import com.example.streamplayer.Viewmodels.SongViewModel
+import com.example.streamplayer.model.Tracks
 import java.util.*
 
 
@@ -35,7 +33,6 @@ class SongListFragment : Fragment()  {
     private var topListAdapter: TrackListAdapter? = null
 
     var tracks = mutableListOf<Tracks>()
-    val positionViewModel: PositionViewModel by activityViewModels()
     val viewModel: SongViewModel by viewModels { ListViewModelFactury(requireActivity().application) }
     val repository = RepositoryInstance.getMusicRepository()
 
@@ -43,10 +40,8 @@ class SongListFragment : Fragment()  {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         Log.d("MyLog","viewModel: $viewModel ")
         return inflater.inflate(R.layout.fragment_song_list, container, false)
-
     }
 
     @SuppressLint("Recycle")
