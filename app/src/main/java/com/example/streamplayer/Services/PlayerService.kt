@@ -169,12 +169,12 @@ class PlayerService() : Service() {
                 repeatState++
                 if (repeatState > 1) repeatState = 0
                 Log.d("MyLog", "repeateState = $repeatState")
-                onPlay()
+                if (currentState == PlaybackStateCompat.STATE_PLAYING) onPlay()
             }
 
             override fun onSetRepeatMode(repeatMode: Int) {
                 super.onSetRepeatMode(repeatMode)
-                onPlay()
+ //               onPlay()
             }
 
 
