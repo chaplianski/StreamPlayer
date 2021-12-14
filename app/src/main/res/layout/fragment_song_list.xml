@@ -64,7 +64,7 @@
         android:layout_height="100dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="628dp"
-        android:src="@drawable/napster_icon"
+        android:src="@drawable/ic_napster_0_2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
